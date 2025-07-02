@@ -1,0 +1,292 @@
+ST Edge AI Core v2.1.0-20194 329b0e98d
+Created date          : 2025-07-02 16:30:31
+Parameters            : generate --target stm32h7 --name tinycnnbuow -m C:/Users/milov/Documents/Work/Research/E4E/buow_tinycnn.tflite --compression none --verbosity 1 --workspace C:/Users/milov/AppData/Local/Temp/mxAI_workspace1176371863682002755276619820603766 --output C:/Users/milov/.stm32cubemx/tinycnnbuow_output
+
+Exec/report summary (generate)
+------------------------------------------------------------------------------------------------------------
+model file         :   C:\Users\milov\Documents\Work\Research\E4E\buow_tinycnn.tflite                       
+type               :   tflite                                                                               
+c_name             :   tinycnnbuow                                                                          
+compression        :   none                                                                                 
+options            :   allocate-inputs, allocate-outputs                                                    
+optimization       :   balanced                                                                             
+target/series      :   stm32h7                                                                              
+workspace dir      :   C:\Users\milov\AppData\Local\Temp\mxAI_workspace1176371863682002755276619820603766   
+output dir         :   C:\Users\milov\.stm32cubemx\tinycnnbuow_output                                       
+model_fmt          :   float                                                                                
+model_name         :   buow_tinycnn                                                                         
+model_hash         :   0x8a2c598bd3a777908b7a16db1ca4fb77                                                   
+params #           :   6,086 items (6.90 KiB)                                                               
+------------------------------------------------------------------------------------------------------------
+input 1/1          :   'serving_default_input0', f32(1x1x64x258), 64.50 KBytes, activations                 
+output 1/1         :   'gemm_16', f32(1x6), 24 Bytes, activations                                           
+macc               :   11,209,786                                                                           
+weights (ro)       :   24,352 B (23.78 KiB) (1 segment) / +8(+0.0%) vs float model                          
+activations (rw)   :   285,056 B (278.38 KiB) (1 segment) *                                                 
+ram (total)        :   285,056 B (278.38 KiB) = 285,056 + 0 + 0                                             
+------------------------------------------------------------------------------------------------------------
+(*) 'input'/'output' buffers can be used from the activations buffer
+
+Model name - buow_tinycnn
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+m_id   layer (type,original)                 oshape                  param/size           macc             connected to   | c_size             c_macc                 c_type                                
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+0      serving_default_input0 (Input, )      [b:1,h:1,w:64,c:258]                                                         |                    +16,836(+100.0%)       Transpose_/Pad_/Transpose_[0, 1, 2]   
+       pad_0 (Pad, PAD)                      [b:1,h:1,w:66,c:260]                                serving_default_input0   |                                           
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+1      reshape_1 (Reshape, RESHAPE)          [b:1,h:66,w:260,c:1]                                                 pad_0   |                                           
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+2      conv2d_2 (Conv2D, CONV_2D)            [b:1,h:64,w:258,c:8]    80/320          1,188,872                reshape_1   | -320(-100.0%)      -1,188,872(-100.0%)    
+       nl_2_nl (Nonlinearity, CONV_2D)       [b:1,h:64,w:258,c:8]                      132,096                 conv2d_2   |                    -132,096(-100.0%)      
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+3      pool_3 (Pool, MAX_POOL_2D)            [b:1,h:32,w:129,c:8]                      132,096                  nl_2_nl   | +320(+100.0%)      +1,320,968(+1000.0%)   Conv2D_[3]                            
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+4      transpose_4 (Transpose, TRANSPOSE)    [b:1,h:8,w:32,c:129]                       16,512                   pool_3   |                    -16,512(-100.0%)       
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+5      pad_5 (Pad, PAD)                      [b:1,h:8,w:34,c:131]                                           transpose_4   |                    +16,512(+100.0%)       Transpose_/Pad_[4, 5]                 
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+6      transpose_6 (Transpose, TRANSPOSE)    [b:1,h:34,w:131,c:8]                       17,816                    pad_5   |                                           Transpose_[6]                         
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+7      conv2d_7 (Conv2D, CONV_2D)            [b:1,h:32,w:129,c:16]   1,168/1,216     4,755,472              transpose_6   | -1,216(-100.0%)    -4,755,472(-100.0%)    
+       nl_7_nl (Nonlinearity, CONV_2D)       [b:1,h:32,w:129,c:16]                      66,048                 conv2d_7   |                    -66,048(-100.0%)       
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+8      pool_8 (Pool, MAX_POOL_2D)            [b:1,h:16,w:64,c:16]                       65,536                  nl_7_nl   | +4,672(+100.0%)    +4,821,520(+7357.1%)   Conv2D_[7]                            
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+9      transpose_9 (Transpose, TRANSPOSE)    [b:1,h:16,w:16,c:64]                        8,192                   pool_8   |                    -8,192(-100.0%)        
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+10     pad_10 (Pad, PAD)                     [b:1,h:16,w:18,c:66]                                           transpose_9   |                    +8,192(+100.0%)        Transpose_/Pad_[8, 9]                 
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+11     transpose_11 (Transpose, TRANSPOSE)   [b:1,h:18,w:66,c:16]                        9,504                   pad_10   |                                           Transpose_[10]                        
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+12     conv2d_12 (Conv2D, CONV_2D)           [b:1,h:16,w:64,c:32]    4,640/4,736     4,718,624             transpose_11   | +13,824(+291.9%)   +32,768(+0.7%)         Conv2D_/Nonlinearity_[11, 12]         
+       nl_12_nl (Nonlinearity, CONV_2D)      [b:1,h:16,w:64,c:32]                       32,768                conv2d_12   |                    -32,768(-100.0%)       
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+13     transpose_13 (Transpose, TRANSPOSE)   [b:1,h:32,w:16,c:64]                       16,384                 nl_12_nl   |                                           Transpose_[13]                        
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+14     reduce_14 (Reduce, MEAN)              [b:1,h:32,w:1,c:1]                         65,536             transpose_13   | +8(+100.0%)        -32,704(-49.9%)        Reduce_/ScaleBias_[14, 15]            
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+15     reshape_15 (Reshape, RESHAPE)         [b:1,c:32]                                                       reduce_14   |                                           
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+16     MatMul (Placeholder, )                [b:6,c:32]              192/768                                              | +24(+3.1%)         +198(+100.0%)          Dense_[o][16]                         
+       Const1 (Placeholder, )                [b:6]                   6/24                                                 | -24(-100.0%)                              
+       gemm_16 (Gemm, FULLY_CONNECTED)       [b:1,c:6]                                     198               reshape_15   |                    -198(-100.0%)          
+                                                                                                                 MatMul   | 
+                                                                                                                 Const1   | 
+------ ------------------------------------- ----------------------- ------------- ----------- ------------------------ --- ------------------ ---------------------- ------------------------------------- 
+model/c-model: macc=11,225,654/11,209,786 -15,868(-0.1%) weights=7,064/24,352 +17,288(+244.7%) activations=--/285,056 io=--/0
+
+
+
+Generated C-graph summary
+------------------------------------------------------------------------------------------------------------------------
+model name            : buow_tinycnn
+c-name                : tinycnnbuow
+c-node #              : 17
+c-array #             : 33
+activations size      : 285056 (1 segment)
+weights size          : 24352 (1 segment)
+macc                  : 11209786
+inputs                : ['serving_default_input0_output']
+outputs               : ['gemm_16_output']
+
+C-Arrays (33)
+------ ------------------------------- -------------- ------------------------- ------------- --------- 
+c_id   name (*_array)                  item/size      domain/mem-pool           c-type        comment   
+------ ------------------------------- -------------- ------------------------- ------------- --------- 
+0      conv2d_12_bias                  32/128         weights/weights           const float             
+1      conv2d_12_output                32768/131072   activations/**default**   float                   
+2      conv2d_12_scratch0              144/576        activations/**default**   float                   
+3      conv2d_12_weights               4608/18432     weights/weights           const float             
+4      conv2d_2_bias                   8/32           weights/weights           const float             
+5      conv2d_2_output                 33024/132096   activations/**default**   float                   
+6      conv2d_2_scratch0               9/36           activations/**default**   float                   
+7      conv2d_2_scratch1               4128/16512     activations/**default**   float                   
+8      conv2d_2_weights                72/288         weights/weights           const float             
+9      conv2d_7_bias                   16/64          weights/weights           const float             
+10     conv2d_7_output                 16384/65536    activations/**default**   float                   
+11     conv2d_7_scratch0               72/288         activations/**default**   float                   
+12     conv2d_7_scratch1               4128/16512     activations/**default**   float                   
+13     conv2d_7_weights                1152/4608      weights/weights           const float             
+14     gemm_16_bias                    6/24           weights/weights           const float             
+15     gemm_16_output                  6/24           activations/**default**   float         /output   
+16     gemm_16_weights                 192/768        weights/weights           const float             
+17     in_pad_0_output                 16512/66048    activations/**default**   float                   
+18     in_pad_10_output                16384/65536    activations/**default**   float                   
+19     in_pad_5_output                 33024/132096   activations/**default**   float                   
+20     nl_12_nl_output                 32768/131072   activations/**default**   float                   
+21     out_pad_0_output                17160/68640    activations/**default**   float                   
+22     pad_0_output                    17160/68640    activations/**default**   float                   
+23     pad_10_output                   19008/76032    activations/**default**   float                   
+24     pad_5_output                    35632/142528   activations/**default**   float                   
+25     reduce_14_Mul_bias              1/4            weights/weights           const float             
+26     reduce_14_Mul_output            32/128         activations/**default**   float                   
+27     reduce_14_Mul_scale             1/4            weights/weights           const float             
+28     reduce_14_output                32/128         activations/**default**   float                   
+29     serving_default_input0_output   16512/66048    activations/**default**   float         /input    
+30     transpose_11_output             19008/76032    activations/**default**   float                   
+31     transpose_13_output             32768/131072   activations/**default**   float                   
+32     transpose_6_output              35632/142528   activations/**default**   float                   
+------ ------------------------------- -------------- ------------------------- ------------- --------- 
+
+C-Layers (17)
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+c_id   name (*_layer)   id   layer_type      macc      rom     tensors                            shape (array id)       
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+0      in_pad_0         0    Transpose       8256      0       I: serving_default_input0_output   f32(1x1x64x258) (29)   
+                                                               O: in_pad_0_output                 f32(1x258x64x1) (17)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+1      pad_0            0    Pad             0         0       I: in_pad_0_output                 f32(1x258x64x1) (17)   
+                                                               O: pad_0_output                    f32(1x260x66x1) (22)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+2      out_pad_0        0    Transpose       8580      0       I: pad_0_output                    f32(1x260x66x1) (22)   
+                                                               O: out_pad_0_output                f32(1x1x66x260) (21)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+3      conv2d_2         3    Conv2D          1453064   320     I: out_pad_0_output                f32(1x1x66x260) (21)   
+                                                               S: conv2d_2_scratch0                                      
+                                                               S: conv2d_2_scratch1                                      
+                                                               W: conv2d_2_weights                f32(8x3x3x1) (8)       
+                                                               W: conv2d_2_bias                   f32(8) (4)             
+                                                               O: conv2d_2_output                 f32(1x32x129x8) (5)    
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+4      in_pad_5         5    Transpose       16512     0       I: conv2d_2_output                 f32(1x32x129x8) (5)    
+                                                               O: in_pad_5_output                 f32(1x129x32x8) (19)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+5      pad_5            5    Pad             0         0       I: in_pad_5_output                 f32(1x129x32x8) (19)   
+                                                               O: pad_5_output                    f32(1x131x34x8) (24)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+6      transpose_6      6    Transpose       17816     0       I: pad_5_output                    f32(1x131x34x8) (24)   
+                                                               O: transpose_6_output              f32(1x34x131x8) (32)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+7      conv2d_7         8    Conv2D          4887056   4672    I: transpose_6_output              f32(1x34x131x8) (32)   
+                                                               S: conv2d_7_scratch0                                      
+                                                               S: conv2d_7_scratch1                                      
+                                                               W: conv2d_7_weights                f32(16x3x3x8) (13)     
+                                                               W: conv2d_7_bias                   f32(16) (9)            
+                                                               O: conv2d_7_output                 f32(1x16x64x16) (10)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+8      in_pad_10        10   Transpose       8192      0       I: conv2d_7_output                 f32(1x16x64x16) (10)   
+                                                               O: in_pad_10_output                f32(1x64x16x16) (18)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+9      pad_10           10   Pad             0         0       I: in_pad_10_output                f32(1x64x16x16) (18)   
+                                                               O: pad_10_output                   f32(1x66x18x16) (23)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+10     transpose_11     11   Transpose       9504      0       I: pad_10_output                   f32(1x66x18x16) (23)   
+                                                               O: transpose_11_output             f32(1x18x66x16) (30)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+11     conv2d_12        12   Conv2D          4718624   18560   I: transpose_11_output             f32(1x18x66x16) (30)   
+                                                               S: conv2d_12_scratch0                                     
+                                                               W: conv2d_12_weights               f32(32x3x3x16) (3)     
+                                                               W: conv2d_12_bias                  f32(32) (0)            
+                                                               O: conv2d_12_output                f32(1x16x64x32) (1)    
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+12     nl_12_nl         12   Nonlinearity    32768     0       I: conv2d_12_output                f32(1x16x64x32) (1)    
+                                                               O: nl_12_nl_output                 f32(1x16x64x32) (20)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+13     transpose_13     13   Transpose       16384     0       I: nl_12_nl_output                 f32(1x16x64x32) (20)   
+                                                               O: transpose_13_output             f32(1x32x16x64) (31)   
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+14     reduce_14        14   Reduce          32768     0       I: transpose_13_output             f32(1x32x16x64) (31)   
+                                                               O: reduce_14_output                f32(1x32x1x1) (28)     
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+15     reduce_14_Mul    14   ScaleBias       64        8       I: reduce_14_output                f32(1x32x1x1) (28)     
+                                                               W: reduce_14_Mul_scale             f32(1) (27)            
+                                                               W: reduce_14_Mul_bias              f32(1) (25)            
+                                                               O: reduce_14_Mul_output            f32(1x32x1x1) (26)     
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+16     gemm_16          16   Dense           198       792     I: reduce_14_Mul_output            f32(1x32x1x1) (26)     
+                                                               W: gemm_16_weights                 f32(6x32) (16)         
+                                                               W: gemm_16_bias                    f32(6) (14)            
+                                                               O: gemm_16_output                  f32(1x6) (15)          
+------ ---------------- ---- --------------- --------- ------- ---------------------------------- ---------------------- 
+
+
+
+Number of operations per c-layer
+------- ------ --------------------------- ------------ -------------- 
+c_id    m_id   name (type)                          #op           type 
+------- ------ --------------------------- ------------ -------------- 
+0       0      in_pad_0 (Transpose)               8,256   smul_f32_f32 
+1       0      pad_0 (Pad)                            0   smul_f32_f32 
+2       0      out_pad_0 (Transpose)              8,580   smul_f32_f32 
+3       3      conv2d_2 (Conv2D)              1,453,064   smul_f32_f32 
+4       5      in_pad_5 (Transpose)              16,512   smul_f32_f32 
+5       5      pad_5 (Pad)                            0   smul_f32_f32 
+6       6      transpose_6 (Transpose)           17,816   smul_f32_f32 
+7       8      conv2d_7 (Conv2D)              4,887,056   smul_f32_f32 
+8       10     in_pad_10 (Transpose)              8,192   smul_f32_f32 
+9       10     pad_10 (Pad)                           0   smul_f32_f32 
+10      11     transpose_11 (Transpose)           9,504   smul_f32_f32 
+11      12     conv2d_12 (Conv2D)             4,718,624   smul_f32_f32 
+12      12     nl_12_nl (Nonlinearity)           32,768     op_f32_f32 
+13      13     transpose_13 (Transpose)          16,384   smul_f32_f32 
+14      14     reduce_14 (Reduce)                32,768   smul_f32_f32 
+15      14     reduce_14_Mul (ScaleBias)             64   smul_f32_f32 
+16      16     gemm_16 (Dense)                      198   smul_f32_f32 
+------- ------ --------------------------- ------------ -------------- 
+total                                        11,209,786 
+
+Number of operation types
+---------------- ------------ ----------- 
+operation type              #           % 
+---------------- ------------ ----------- 
+smul_f32_f32       11,177,018       99.7% 
+op_f32_f32             32,768        0.3% 
+
+Complexity report (model)
+------ ------------------------ ------------------------- ------------------------- ----------- 
+m_id   name                     c_macc                    c_rom                     c_id        
+------ ------------------------ ------------------------- ------------------------- ----------- 
+0      serving_default_input0   |                  0.2%   |                  0.0%   [0, 1, 2]   
+3      pool_3                   |||||             13.0%   |                  1.3%   [3]         
+5      pad_5                    |                  0.1%   |                  0.0%   [4, 5]      
+6      transpose_6              |                  0.2%   |                  0.0%   [6]         
+8      pool_8                   ||||||||||||||||  43.6%   ||||              19.2%   [7]         
+10     pad_10                   |                  0.1%   |                  0.0%   [8, 9]      
+11     transpose_11             |                  0.1%   |                  0.0%   [10]        
+12     conv2d_12                |||||||||||||||   42.4%   ||||||||||||||||  76.2%   [11, 12]    
+13     transpose_13             |                  0.1%   |                  0.0%   [13]        
+14     reduce_14                |                  0.3%   |                  0.0%   [14, 15]    
+16     MatMul                   |                  0.0%   |                  3.3%   [16]        
+------ ------------------------ ------------------------- ------------------------- ----------- 
+macc=11,209,786 weights=24,352 act=285,056 ram_io=0
+ 
+ Requested memory size by section - "stm32h7" target
+ ------------------------------ -------- -------- ------- --------- 
+ module                             text   rodata    data       bss 
+ ------------------------------ -------- -------- ------- --------- 
+ NetworkRuntime1010_CM7_GCC.a     16,740        0       0         0 
+ tinycnnbuow.o                       888      216   4,860       296 
+ tinycnnbuow_data.o                   48       16      88         0 
+ lib (toolchain)*                      0        0       0         0 
+ ------------------------------ -------- -------- ------- --------- 
+ RT total**                       17,676      232   4,948       296 
+ ------------------------------ -------- -------- ------- --------- 
+ weights                               0   24,352       0         0 
+ activations                           0        0       0   285,056 
+ io                                    0        0       0         0 
+ ------------------------------ -------- -------- ------- --------- 
+ TOTAL                            17,676   24,584   4,948   285,352 
+ ------------------------------ -------- -------- ------- --------- 
+ *  toolchain objects (libm/libgcc*)
+ ** RT AI runtime objects (kernels+infrastructure)
+  
+  Summary - "stm32h7" target
+  --------------------------------------------------
+               FLASH (ro)      %*   RAM (rw)      % 
+  --------------------------------------------------
+  RT total         22,856   48.4%      5,244   1.8% 
+  --------------------------------------------------
+  TOTAL            47,208            290,300        
+  --------------------------------------------------
+  *  rt/total
+
+
+Generated files (7)
+-------------------------------------------------------------------------- 
+C:\Users\milov\.stm32cubemx\tinycnnbuow_output\tinycnnbuow_data_params.h   
+C:\Users\milov\.stm32cubemx\tinycnnbuow_output\tinycnnbuow_data_params.c   
+C:\Users\milov\.stm32cubemx\tinycnnbuow_output\tinycnnbuow_data.h          
+C:\Users\milov\.stm32cubemx\tinycnnbuow_output\tinycnnbuow_data.c          
+C:\Users\milov\.stm32cubemx\tinycnnbuow_output\tinycnnbuow_config.h        
+C:\Users\milov\.stm32cubemx\tinycnnbuow_output\tinycnnbuow.h               
+C:\Users\milov\.stm32cubemx\tinycnnbuow_output\tinycnnbuow.c               
