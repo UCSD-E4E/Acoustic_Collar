@@ -38,92 +38,153 @@
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_cortex.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_cortex.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_dma.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_dma2d.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma2d.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_dma_ex.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma_ex.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dma_ex.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_dsi.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_dsi.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_exti.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_exti.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_flash.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_flash_ex.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_flash_ex.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_gpio.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_gpio.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_hsem.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hsem.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_hsem.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_i2c.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_i2c_ex.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c_ex.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_i2c_ex.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_ltdc.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_ltdc_ex.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_ltdc_ex.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_mdma.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_mdma.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_nand.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_nand.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_nor.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_nor.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_pwr.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_pwr_ex.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_pwr_ex.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_rcc.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_rcc_ex.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_rcc_ex.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_sai.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sai.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_sai_ex.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sai_ex.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_sdram.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sdram.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_sram.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_sram.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_uart.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart.c</location>
 		</link>
 		<link>
 			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_hal_uart_ex.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c</locationURI>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_hal_uart_ex.c</location>
+		</link>
+		<link>
+			<name>Drivers/STM32H7xx_HAL_Driver/stm32h7xx_ll_fmc.c</name>
+			<type>1</type>
+			<location>C:/Users/milov/Documents/Work/Research/E4E/Acoustic_Collar/Drivers/STM32H7xx_HAL_Driver/Src/stm32h7xx_ll_fmc.c</location>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>copy_PARENT</name>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/acoustic-species-hardware</value>
+		</variable>
+	</variableList>
 </projectDescription>
