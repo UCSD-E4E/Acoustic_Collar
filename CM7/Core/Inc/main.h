@@ -34,10 +34,10 @@ extern "C" {
 #include "stm32h747i_discovery_bus.h"
 
 // Not sure if I need these libs
-#include "stm32h747i_discovery_qspi.h"
-#include "stm32h747i_discovery_sd.h"
-#include "stm32h747i_discovery_sdram.h"
-#include "stm32h747i_discovery_ts.h"
+//#include "stm32h747i_discovery_qspi.h"
+//#include "stm32h747i_discovery_sd.h"
+//#include "stm32h747i_discovery_sdram.h"
+//#include "stm32h747i_discovery_ts.h"
 
 #define RECORD_BUFFER_SIZE 4096 // Size of the audio buffer
 /* Private includes ----------------------------------------------------------*/

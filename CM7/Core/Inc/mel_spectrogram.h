@@ -40,8 +40,4 @@ int calculate_mel_spectrogram(const int16_t *pcm_data, uint32_t pcm_size, float 
  */
 void normalize_spectrogram(float *spec, uint16_t n_mels, uint16_t n_frames);
 
-<<<<<<< HEAD
 #endif // MEL_SPECTROGRAM_H
-=======
-#endif // MEL_SPECTROGRAM_H
->>>>>>> 829b33dc37785c9cc4e962a094db020454142faa

@@ -1438,4 +1438,4 @@ VP_TIM13_VS_ClockSourceINT.Mode=Enable_Timer
 VP_TIM13_VS_ClockSourceINT.Signal=TIM13_VS_ClockSourceINT
 board=STM32H747I-DISCO
 boardIOC=true
-isbadioc=false
+isbadioc=true
