@@ -186,5 +186,9 @@
 			<name>copy_PARENT</name>
 			<value>$%7BPARENT-2-PROJECT_LOC%7D/acoustic-species-hardware</value>
 		</variable>
+		<variable>
+			<name>copy_PARENT1</name>
+			<value>$%7BPARENT-1-copy_PARENT%7D/Acoustic_Species/acoustic-species-hardware</value>
+		</variable>
 	</variableList>
 </projectDescription>

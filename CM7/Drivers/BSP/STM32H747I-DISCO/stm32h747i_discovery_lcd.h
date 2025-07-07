@@ -28,7 +28,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h747i_discovery_conf.h"
 #include "stm32h747i_discovery_errno.h"
-#include "../Components/Common/lcd.h"
+#include "lcd.h"
 
 /* Include NT35510 LCD Driver IC driver code */
 #include "../Components/nt35510/nt35510.h"

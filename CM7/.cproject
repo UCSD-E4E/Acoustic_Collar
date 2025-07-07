@@ -49,14 +49,15 @@
 									<listOptionValue builtIn="false" value="../../Drivers/STM32H7xx_HAL_Driver/Inc"/>
 									<listOptionValue builtIn="false" value="../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../X-CUBE-AI"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\firaz\OneDrive\Desktop\E4E\Acoustic_Collar\Middlewares\ST\AI\Inc&quot;"/>
 									<listOptionValue builtIn="false" value="../X-CUBE-AI/App"/>
-									<listOptionValue builtIn="false" value="../../Middlewares/ST/AI/Inc"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\firaz\OneDrive\Desktop\E4E\Acoustic_Collar\Drivers\CMSIS\Device\ST\STM32H7xx\Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\firaz\OneDrive\Desktop\E4E\Acoustic_Collar\Drivers\CMSIS\Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\firaz\OneDrive\Desktop\E4E\Acoustic_Collar\Drivers\CMSIS\DSP\Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\firaz\OneDrive\Desktop\E4E\Acoustic_Collar\CM7\Drivers\BSP\Components&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\firaz\OneDrive\Desktop\E4E\Acoustic_Collar\CM7\Drivers\BSP\Components\Common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../..\Middlewares\ST\AI\Inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../..\CM7\lcd\_htmresc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../..\CM7\Drivers\BSP\Components\Common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../..\CM7\Drivers\BSP\Components&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../..\Drivers\CMSIS\DSP\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../..\Drivers\CMSIS\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../..\Drivers\CMSIS\Device\ST\STM32H7xx\Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;../..\CM7\Drivers\BSP\STM32H747I-DISCO&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.490802497" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
