@@ -216,11 +216,29 @@ void HAL_DSI_MspDeInit(DSI_HandleTypeDef* hdsi)
   */
 void HAL_LTDC_MspInit(LTDC_HandleTypeDef* hltdc)
 {
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
   if(hltdc->Instance==LTDC)
   {
     /* USER CODE BEGIN LTDC_MspInit 0 */
 
     /* USER CODE END LTDC_MspInit 0 */
+
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
+    PeriphClkInitStruct.PLL3.PLL3M = 32;
+    PeriphClkInitStruct.PLL3.PLL3N = 129;
+    PeriphClkInitStruct.PLL3.PLL3P = 2;
+    PeriphClkInitStruct.PLL3.PLL3Q = 2;
+    PeriphClkInitStruct.PLL3.PLL3R = 2;
+    PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_3;
+    PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE;
+    PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
     /* Peripheral clock enable */
     __HAL_RCC_LTDC_CLK_ENABLE();
     /* USER CODE BEGIN LTDC_MspInit 1 */
@@ -594,10 +612,27 @@ void HAL_SAI_MspInit(SAI_HandleTypeDef* hsai)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct;
+<<<<<<< HEAD
+=======
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+>>>>>>> 829b33dc37785c9cc4e962a094db020454142faa
 /* SAI1 */
     if(hsai->Instance==SAI1_Block_A)
     {
     /* Peripheral clock enable */
+<<<<<<< HEAD
+=======
+
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
+    PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+>>>>>>> 829b33dc37785c9cc4e962a094db020454142faa
     if (SAI1_client == 0)
     {
        __HAL_RCC_SAI1_CLK_ENABLE();
@@ -628,6 +663,19 @@ void HAL_SAI_MspInit(SAI_HandleTypeDef* hsai)
     if(hsai->Instance==SAI1_Block_B)
     {
       /* Peripheral clock enable */
+<<<<<<< HEAD
+=======
+
+  /** Initializes the peripherals clock
+  */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI1;
+    PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+>>>>>>> 829b33dc37785c9cc4e962a094db020454142faa
       if (SAI1_client == 0)
       {
        __HAL_RCC_SAI1_CLK_ENABLE();
