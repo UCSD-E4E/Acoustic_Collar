@@ -39,6 +39,7 @@ extern "C" {
 //#include "stm32h747i_discovery_sdram.h"
 //#include "stm32h747i_discovery_ts.h"
 
+#define BUFFER_SIZE 4096
 #define RECORD_BUFFER_SIZE 4096 // Size of the audio buffer
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

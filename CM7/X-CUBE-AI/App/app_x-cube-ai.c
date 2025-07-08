@@ -54,32 +54,44 @@
 #include "app_x-cube-ai.h"
 #include "main.h"
 #include "ai_datatypes_defines.h"
-#include "tinycnnbuow.h"
-#include "tinycnnbuow_data.h"
+#include "tinyaudiocnn.h"
+#include "tinyaudiocnn_data.h"
+#include "mel_spec_buffer.h"
+#include "main.h"
+#include "mel_spectrogram.h"
+#include "mel_filterbank.h"
+
+int _write(int file, char *ptr, int len)
+{
+    HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, HAL_MAX_DELAY);
+    return len;
+}
+
+// extern float mel_spec_buffer[64 * 258];
 
 /* USER CODE BEGIN includes */
 /* USER CODE END includes */
 
 /* IO buffers ----------------------------------------------------------------*/
 
-#if !defined(AI_TINYCNNBUOW_INPUTS_IN_ACTIVATIONS)
-AI_ALIGNED(4) ai_i8 data_in_1[AI_TINYCNNBUOW_IN_1_SIZE_BYTES];
-ai_i8* data_ins[AI_TINYCNNBUOW_IN_NUM] = {
+#if !defined(AI_TINYAUDIOCNN_INPUTS_IN_ACTIVATIONS)
+AI_ALIGNED(4) ai_i8 data_in_1[AI_TINYAUDIOCNN_IN_1_SIZE_BYTES];
+ai_i8* data_ins[AI_TINYAUDIOCNN_IN_NUM] = {
 data_in_1
 };
 #else
-ai_i8* data_ins[AI_TINYCNNBUOW_IN_NUM] = {
+ai_i8* data_ins[AI_TINYAUDIOCNN_IN_NUM] = {
 NULL
 };
 #endif
 
-#if !defined(AI_TINYCNNBUOW_OUTPUTS_IN_ACTIVATIONS)
-AI_ALIGNED(4) ai_i8 data_out_1[AI_TINYCNNBUOW_OUT_1_SIZE_BYTES];
-ai_i8* data_outs[AI_TINYCNNBUOW_OUT_NUM] = {
+#if !defined(AI_TINYAUDIOCNN_OUTPUTS_IN_ACTIVATIONS)
+AI_ALIGNED(4) ai_i8 data_out_1[AI_TINYAUDIOCNN_OUT_1_SIZE_BYTES];
+ai_i8* data_outs[AI_TINYAUDIOCNN_OUT_NUM] = {
 data_out_1
 };
 #else
-ai_i8* data_outs[AI_TINYCNNBUOW_OUT_NUM] = {
+ai_i8* data_outs[AI_TINYAUDIOCNN_OUT_NUM] = {
 NULL
 };
 #endif
@@ -87,16 +99,19 @@ NULL
 /* Activations buffers -------------------------------------------------------*/
 
 AI_ALIGNED(32)
-static uint8_t pool0[AI_TINYCNNBUOW_DATA_ACTIVATION_1_SIZE];
+static uint8_t pool0[AI_TINYAUDIOCNN_DATA_ACTIVATION_1_SIZE];
 
 ai_handle data_activations0[] = {pool0};
 
 /* AI objects ----------------------------------------------------------------*/
 
-static ai_handle tinycnnbuow = AI_HANDLE_NULL;
+static ai_handle tinyaudiocnn = AI_HANDLE_NULL;
 
 static ai_buffer* ai_input;
 static ai_buffer* ai_output;
+
+// simulated spectrogram 64 mel bands × 258 time frames = 16512 float values
+// float dummy_mel_spectrogram[64 * 258];
 
 static void ai_log_err(const ai_error err, const char *fct)
 {
@@ -116,37 +131,37 @@ static int ai_boostrap(ai_handle *act_addr)
   ai_error err;
 
   /* Create and initialize an instance of the model */
-  err = ai_tinycnnbuow_create_and_init(&tinycnnbuow, act_addr, NULL);
+  err = ai_tinyaudiocnn_create_and_init(&tinyaudiocnn, act_addr, NULL);
   if (err.type != AI_ERROR_NONE) {
-    ai_log_err(err, "ai_tinycnnbuow_create_and_init");
+    ai_log_err(err, "ai_tinyaudiocnn_create_and_init");
     return -1;
   }
 
-  ai_input = ai_tinycnnbuow_inputs_get(tinycnnbuow, NULL);
-  ai_output = ai_tinycnnbuow_outputs_get(tinycnnbuow, NULL);
+  ai_input = ai_tinyaudiocnn_inputs_get(tinyaudiocnn, NULL);
+  ai_output = ai_tinyaudiocnn_outputs_get(tinyaudiocnn, NULL);
 
-#if defined(AI_TINYCNNBUOW_INPUTS_IN_ACTIVATIONS)
+#if defined(AI_TINYAUDIOCNN_INPUTS_IN_ACTIVATIONS)
   /*  In the case where "--allocate-inputs" option is used, memory buffer can be
    *  used from the activations buffer. This is not mandatory.
    */
-  for (int idx=0; idx < AI_TINYCNNBUOW_IN_NUM; idx++) {
+  for (int idx=0; idx < AI_TINYAUDIOCNN_IN_NUM; idx++) {
 	data_ins[idx] = ai_input[idx].data;
   }
 #else
-  for (int idx=0; idx < AI_TINYCNNBUOW_IN_NUM; idx++) {
+  for (int idx=0; idx < AI_TINYAUDIOCNN_IN_NUM; idx++) {
 	  ai_input[idx].data = data_ins[idx];
   }
 #endif
 
-#if defined(AI_TINYCNNBUOW_OUTPUTS_IN_ACTIVATIONS)
+#if defined(AI_TINYAUDIOCNN_OUTPUTS_IN_ACTIVATIONS)
   /*  In the case where "--allocate-outputs" option is used, memory buffer can be
    *  used from the activations buffer. This is no mandatory.
    */
-  for (int idx=0; idx < AI_TINYCNNBUOW_OUT_NUM; idx++) {
+  for (int idx=0; idx < AI_TINYAUDIOCNN_OUT_NUM; idx++) {
 	data_outs[idx] = ai_output[idx].data;
   }
 #else
-  for (int idx=0; idx < AI_TINYCNNBUOW_OUT_NUM; idx++) {
+  for (int idx=0; idx < AI_TINYAUDIOCNN_OUT_NUM; idx++) {
 	ai_output[idx].data = data_outs[idx];
   }
 #endif
@@ -158,39 +173,109 @@ static int ai_run(void)
 {
   ai_i32 batch;
 
-  batch = ai_tinycnnbuow_run(tinycnnbuow, ai_input, ai_output);
+  batch = ai_tinyaudiocnn_run(tinyaudiocnn, ai_input, ai_output);
   if (batch != 1) {
-    ai_log_err(ai_tinycnnbuow_get_error(tinycnnbuow),
-        "ai_tinycnnbuow_run");
+    ai_log_err(ai_tinyaudiocnn_get_error(tinyaudiocnn),
+        "ai_tinyaudiocnn_run");
     return -1;
   }
 
   return 0;
 }
 
-/* USER CODE BEGIN 2 */
-int acquire_and_process_data(ai_i8* data[])
-{
-  /* fill the inputs of the c-model
-  for (int idx=0; idx < AI_TINYCNNBUOW_IN_NUM; idx++ )
-  {
-      data[idx] = ....
-  }
+// this buffer is used to store the mel-spectrogram data
+// n_mels x n_frames = 64 x 258 = 16512
 
-  */
-  return 0;
+// need to add for later in audio_recording.c
+/*
+#define MEL_N_MELS 64
+#define MEL_N_FRAMES 258
+#define MEL_SPEC_SIZE (MEL_N_MELS * MEL_N_FRAMES)
+*/
+
+// non dummy integration part
+// extern float mel_spec_buffer[64 * 258];
+
+/* USER CODE BEGIN 2 */
+int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
+{
+
+  // TODO: move spectrogram conversion to a different place
+
+  // define configuration - match trained model
+    MelSpectrogramConfig_t config = {.fft_size = 512,
+                                     .hop_length = 256,
+                                     .n_mels = 64,
+                                     .sample_rate = 16000.0f,
+                                     .f_min = 0.0f,
+                                     .f_max = 8000.0f};
+
+    mel_spectrogram_init(&config);
+
+    // output spectrogram buffer
+    // n_mels x n_frames
+    static float mel_spec[64 * 64];
+    // zero out mel spectrogram buffer
+    memset(mel_spec, 0, sizeof(mel_spec));
+
+    // call DSP pipeline for PCMBuffer -> mel_spec
+    int n_frames = calculate_mel_spectrogram((const int16_t *)pcm_buffer, RECORD_BUFFER_SIZE, mel_spec,
+                                             64); // max columns
+
+    // normalize to [0, 1]
+    normalize_spectrogram(mel_spec, config.n_mels, n_frames);
+
+    float *dst = (float *)data[0];
+
+    for (int i = 0; i < AI_TINYAUDIOCNN_IN_1_SIZE; ++i) {
+        dst[i] = mel_spec[i];  // 64 * 258 = 16512
+    }
+
+    return 0;
 }
+
 
 int post_process(ai_i8* data[])
 {
   /* process the predictions
-  for (int idx=0; idx < AI_TINYCNNBUOW_OUT_NUM; idx++ )
-  {
-      data[idx] = ....
-  }
-
   */
-  return 0;
+
+    // data[0] is a void pointer to a float buffer
+    float *predictions = (float *)data[0];
+
+    char *class_names[] = {
+        "Cluck",
+        "Coocoo",
+        "Twitter",
+        "Alarm",
+        "Chick Begging",
+        "no_buow"
+    };
+
+    int max_index = 0;
+    float max_value = predictions[0];
+    for (int i = 0; i < AI_TINYAUDIOCNN_OUT_1_SIZE; ++i) {
+        if (predictions[i] > max_value) {
+            max_value = predictions[i];
+            max_index = i;
+        }
+        int predict = predictions[i] * 100;
+        int whole_part = predict / 100;
+        if (predict < 0) {
+          predict -= 2 * predict; // convert to positive
+        }
+
+      printf("Class: %s, Score: %d.%d\n\r", class_names[i], whole_part, predict%100);
+      HAL_Delay(2000);
+    }
+    printf("Predicted Class: %s\n\r", class_names[max_index]);
+    HAL_Delay(8000);
+
+    return 0;
+
+    // output tensor is the first element of data array
+
+    // return 0;
 }
 /* USER CODE END 2 */
 
@@ -205,24 +290,24 @@ void MX_X_CUBE_AI_Init(void)
     /* USER CODE END 5 */
 }
 
-void MX_X_CUBE_AI_Process(void)
+void MX_X_CUBE_AI_Process(uint16_t *pcm_buffer)
 {
     /* USER CODE BEGIN 6 */
   int res = -1;
 
-  printf("TEMPLATE - run - main loop\r\n");
-
-  if (tinycnnbuow) {
+  if (tinyaudiocnn) {
 
     do {
       /* 1 - acquire and pre-process input data */
-      res = acquire_and_process_data(data_ins);
+      res = acquire_and_process_data(data_ins, pcm_buffer);
       /* 2 - process the data - call inference engine */
       if (res == 0)
         res = ai_run();
       /* 3- post-process the predictions */
-      if (res == 0)
+      if (res == 0) {
         res = post_process(data_outs);
+        return;
+      }
     } while (res==0);
   }
 
