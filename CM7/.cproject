@@ -45,19 +45,18 @@
 									<listOptionValue builtIn="false" value="USE_PWR_DIRECT_SMPS_SUPPLY"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.325378891" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../Core/Inc"/>
-									<listOptionValue builtIn="false" value="../../Drivers/STM32H7xx_HAL_Driver/Inc"/>
-									<listOptionValue builtIn="false" value="../../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy"/>
-									<listOptionValue builtIn="false" value="../X-CUBE-AI"/>
-									<listOptionValue builtIn="false" value="&quot;../..\CM7\Drivers\BSP\Components&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../..\Drivers\CMSIS\DSP\Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../..\Drivers\CMSIS\Include&quot;"/>
-									<listOptionValue builtIn="false" value="../../CM7/Drivers/BSP/Components/Common"/>
-									<listOptionValue builtIn="false" value="../../Drivers/CMSIS/Device/ST/STM32H7xx/Include"/>
-									<listOptionValue builtIn="false" value="&quot;../..\Middlewares\ST\AI\Inc&quot;"/>
-									<listOptionValue builtIn="false" value="../../Drivers/CMSIS/Include"/>
-									<listOptionValue builtIn="false" value="../X-CUBE-AI/App"/>
-									<listOptionValue builtIn="false" value="../../Middlewares/ST/AI/Inc"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../Middlewares/ST/AI/Inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CM7/X-CUBE-AI&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CM7/X-CUBE-AI/App&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../Drivers/CMSIS/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../Drivers/CMSIS/Device/ST/STM32H7xx/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../Drivers/STM32H7xx_HAL_Driver/Inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../Drivers/CMSIS/DSP/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CM7/Core/Inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CM7/Drivers/BSP/Components/Common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CM7/Drivers/BSP/Components&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../CM7/Drivers/BSP/STM32H747I-DISCO&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.490802497" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -108,8 +107,8 @@
 									<listOptionValue builtIn="false" value=":NetworkRuntime1010_CM7_GCC.a"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.linker.option.directories.433765497" name="Library search path (-L)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.linker.option.directories" valueType="libPaths">
-									<listOptionValue builtIn="false" value="../../Middlewares/ST/AI/Lib"/>
-									<listOptionValue builtIn="false" value="&quot;..\..\Drivers\CMSIS\DSP\Lib\GCC&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../Drivers/CMSIS/DSP/Lib/GCC&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../Middlewares/ST/AI/Lib&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.linker.input.527826898" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
