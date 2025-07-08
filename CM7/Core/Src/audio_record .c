@@ -152,7 +152,7 @@
 
      // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
      printf("processing 2nd half of buffer");
-     MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+     MX_X_CUBE_AI_Process();
 
      playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
      if(playbackPtr >= RECORD_BUFFER_SIZE)
@@ -184,7 +184,7 @@
 
      // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
      printf("processing 1st half of buffer");
-     MX_X_CUBE_AI_Process(RecPlayback[playbackPtr]);
+     MX_X_CUBE_AI_Process();
 
      playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
      if(playbackPtr >= RECORD_BUFFER_SIZE)
