@@ -1,6 +1,6 @@
 ST Edge AI Core v2.1.0-20194 329b0e98d
-Created date          : 2025-07-07 10:15:07
-Parameters            : generate --target stm32h7 --name tinycnnbuow -m C:/Users/firaz/OneDrive/Desktop/E4E/CSE145-237D-ML/models/tflite/buow_tinycnn.tflite --compression none --verbosity 1 --workspace C:/Users/firaz/AppData/Local/Temp/mxAI_workspace3844945058200594448170868977953 --output C:/Users/firaz/.stm32cubemx/tinycnnbuow_output
+Created date          : 2025-07-07 14:53:23
+Parameters            : generate --target stm32h7 --name tinycnnbuow -m C:/Users/firaz/OneDrive/Desktop/E4E/CSE145-237D-ML/models/tflite/buow_tinycnn.tflite --compression none --verbosity 1 --workspace C:/Users/firaz/AppData/Local/Temp/mxAI_workspace205396014904002767115005206502562 --output C:/Users/firaz/.stm32cubemx/tinycnnbuow_output
 
 Exec/report summary (generate)
 --------------------------------------------------------------------------------------------------------------
@@ -11,7 +11,7 @@ compression        :   none
 options            :   allocate-inputs, allocate-outputs                                                      
 optimization       :   balanced                                                                               
 target/series      :   stm32h7                                                                                
-workspace dir      :   C:\Users\firaz\AppData\Local\Temp\mxAI_workspace3844945058200594448170868977953        
+workspace dir      :   C:\Users\firaz\AppData\Local\Temp\mxAI_workspace205396014904002767115005206502562      
 output dir         :   C:\Users\firaz\.stm32cubemx\tinycnnbuow_output                                         
 model_fmt          :   float                                                                                  
 model_name         :   buow_tinycnn                                                                           
