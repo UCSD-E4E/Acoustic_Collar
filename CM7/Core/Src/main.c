@@ -46,7 +46,18 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+DMA2D_HandleTypeDef hdma2d;
+
+DSI_HandleTypeDef hdsi;
+
+LTDC_HandleTypeDef hltdc;
+
+SAI_HandleTypeDef hsai_BlockA1;
+SAI_HandleTypeDef hsai_BlockB1;
+
 UART_HandleTypeDef huart1;
+
+SDRAM_HandleTypeDef hsdram1;
 
 /* USER CODE BEGIN PV */
 
@@ -57,6 +68,11 @@ void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_SAI1_Init(void);
+static void MX_DMA2D_Init(void);
+static void MX_DSIHOST_DSI_Init(void);
+static void MX_LTDC_Init(void);
+static void MX_FMC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -136,6 +152,11 @@ Error_Handler();
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
+  MX_SAI1_Init();
+  MX_DMA2D_Init();
+  MX_DSIHOST_DSI_Init();
+  MX_LTDC_Init();
+  MX_FMC_Init();
   MX_X_CUBE_AI_Init();
   /* USER CODE BEGIN 2 */
 
@@ -175,18 +196,19 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI
-                              |RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSI
+                              |RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 5;
-  RCC_OscInitStruct.PLL.PLLN = 48;
+  RCC_OscInitStruct.PLL.PLLN = 160;
   RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 5;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
@@ -201,15 +223,15 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
                               |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV1;
-  RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV1;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
+  RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -226,20 +248,313 @@ void PeriphCommonClock_Config(void)
 
   /** Initializes the peripherals clock
   */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_SAI1
+                              |RCC_PERIPHCLK_LTDC;
   PeriphClkInitStruct.PLL2.PLL2M = 2;
-  PeriphClkInitStruct.PLL2.PLL2N = 12;
+  PeriphClkInitStruct.PLL2.PLL2N = 24;
   PeriphClkInitStruct.PLL2.PLL2P = 2;
   PeriphClkInitStruct.PLL2.PLL2Q = 2;
   PeriphClkInitStruct.PLL2.PLL2R = 2;
   PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
-  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOMEDIUM;
+  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
   PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
-  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
+  PeriphClkInitStruct.PLL3.PLL3M = 5;
+  PeriphClkInitStruct.PLL3.PLL3N = 32;
+  PeriphClkInitStruct.PLL3.PLL3P = 2;
+  PeriphClkInitStruct.PLL3.PLL3Q = 2;
+  PeriphClkInitStruct.PLL3.PLL3R = 2;
+  PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_2;
+  PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOMEDIUM;
+  PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
+  PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL2;
+  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL3;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief DMA2D Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_DMA2D_Init(void)
+{
+
+  /* USER CODE BEGIN DMA2D_Init 0 */
+
+  /* USER CODE END DMA2D_Init 0 */
+
+  /* USER CODE BEGIN DMA2D_Init 1 */
+
+  /* USER CODE END DMA2D_Init 1 */
+  hdma2d.Instance = DMA2D;
+  hdma2d.Init.Mode = DMA2D_M2M;
+  hdma2d.Init.ColorMode = DMA2D_OUTPUT_ARGB8888;
+  hdma2d.Init.OutputOffset = 0;
+  hdma2d.LayerCfg[1].InputOffset = 0;
+  hdma2d.LayerCfg[1].InputColorMode = DMA2D_INPUT_ARGB8888;
+  hdma2d.LayerCfg[1].AlphaMode = DMA2D_NO_MODIF_ALPHA;
+  hdma2d.LayerCfg[1].InputAlpha = 0;
+  hdma2d.LayerCfg[1].AlphaInverted = DMA2D_REGULAR_ALPHA;
+  hdma2d.LayerCfg[1].RedBlueSwap = DMA2D_RB_REGULAR;
+  hdma2d.LayerCfg[1].ChromaSubSampling = DMA2D_NO_CSS;
+  if (HAL_DMA2D_Init(&hdma2d) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_DMA2D_ConfigLayer(&hdma2d, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN DMA2D_Init 2 */
+
+  /* USER CODE END DMA2D_Init 2 */
+
+}
+
+/**
+  * @brief DSIHOST Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_DSIHOST_DSI_Init(void)
+{
+
+  /* USER CODE BEGIN DSIHOST_Init 0 */
+
+  /* USER CODE END DSIHOST_Init 0 */
+
+  DSI_PLLInitTypeDef PLLInit = {0};
+  DSI_HOST_TimeoutTypeDef HostTimeouts = {0};
+  DSI_PHY_TimerTypeDef PhyTimings = {0};
+  DSI_LPCmdTypeDef LPCmd = {0};
+
+  /* USER CODE BEGIN DSIHOST_Init 1 */
+
+  /* USER CODE END DSIHOST_Init 1 */
+  hdsi.Instance = DSI;
+  hdsi.Init.AutomaticClockLaneControl = DSI_AUTO_CLK_LANE_CTRL_DISABLE;
+  hdsi.Init.TXEscapeCkdiv = 2;
+  hdsi.Init.NumberOfLanes = DSI_ONE_DATA_LANE;
+  PLLInit.PLLNDIV = 20;
+  PLLInit.PLLIDF = DSI_PLL_IN_DIV1;
+  PLLInit.PLLODF = DSI_PLL_OUT_DIV2;
+  if (HAL_DSI_Init(&hdsi, &PLLInit) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  HostTimeouts.TimeoutCkdiv = 1;
+  HostTimeouts.HighSpeedTransmissionTimeout = 0;
+  HostTimeouts.LowPowerReceptionTimeout = 0;
+  HostTimeouts.HighSpeedReadTimeout = 0;
+  HostTimeouts.LowPowerReadTimeout = 0;
+  HostTimeouts.HighSpeedWriteTimeout = 0;
+  HostTimeouts.HighSpeedWritePrespMode = DSI_HS_PM_DISABLE;
+  HostTimeouts.LowPowerWriteTimeout = 0;
+  HostTimeouts.BTATimeout = 0;
+  if (HAL_DSI_ConfigHostTimeouts(&hdsi, &HostTimeouts) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  PhyTimings.ClockLaneHS2LPTime = 20;
+  PhyTimings.ClockLaneLP2HSTime = 18;
+  PhyTimings.DataLaneHS2LPTime = 10;
+  PhyTimings.DataLaneLP2HSTime = 13;
+  PhyTimings.DataLaneMaxReadTime = 0;
+  PhyTimings.StopWaitTime = 0;
+
+  if (HAL_DSI_ConfigPhyTimer(&hdsi, &PhyTimings) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_DSI_ConfigFlowControl(&hdsi, DSI_FLOW_CONTROL_BTA) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_DSI_SetLowPowerRXFilter(&hdsi, 10000) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_DSI_ConfigErrorMonitor(&hdsi, HAL_DSI_ERROR_NONE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  LPCmd.LPGenShortWriteNoP = DSI_LP_GSW0P_DISABLE;
+  LPCmd.LPGenShortWriteOneP = DSI_LP_GSW1P_DISABLE;
+  LPCmd.LPGenShortWriteTwoP = DSI_LP_GSW2P_DISABLE;
+  LPCmd.LPGenShortReadNoP = DSI_LP_GSR0P_DISABLE;
+  LPCmd.LPGenShortReadOneP = DSI_LP_GSR1P_DISABLE;
+  LPCmd.LPGenShortReadTwoP = DSI_LP_GSR2P_DISABLE;
+  LPCmd.LPGenLongWrite = DSI_LP_GLW_DISABLE;
+  LPCmd.LPDcsShortWriteNoP = DSI_LP_DSW0P_DISABLE;
+  LPCmd.LPDcsShortWriteOneP = DSI_LP_DSW1P_DISABLE;
+  LPCmd.LPDcsShortReadNoP = DSI_LP_DSR0P_DISABLE;
+  LPCmd.LPDcsLongWrite = DSI_LP_DLW_DISABLE;
+  LPCmd.LPMaxReadPacket = DSI_LP_MRDP_DISABLE;
+  LPCmd.AcknowledgeRequest = DSI_ACKNOWLEDGE_DISABLE;
+  if (HAL_DSI_ConfigCommand(&hdsi, &LPCmd) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN DSIHOST_Init 2 */
+
+  /* USER CODE END DSIHOST_Init 2 */
+
+}
+
+/**
+  * @brief LTDC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_LTDC_Init(void)
+{
+
+  /* USER CODE BEGIN LTDC_Init 0 */
+
+  /* USER CODE END LTDC_Init 0 */
+
+  LTDC_LayerCfgTypeDef pLayerCfg = {0};
+  LTDC_LayerCfgTypeDef pLayerCfg1 = {0};
+
+  /* USER CODE BEGIN LTDC_Init 1 */
+
+  /* USER CODE END LTDC_Init 1 */
+  hltdc.Instance = LTDC;
+  hltdc.Init.HSPolarity = LTDC_HSPOLARITY_AL;
+  hltdc.Init.VSPolarity = LTDC_VSPOLARITY_AL;
+  hltdc.Init.DEPolarity = LTDC_DEPOLARITY_AL;
+  hltdc.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
+  hltdc.Init.HorizontalSync = 7;
+  hltdc.Init.VerticalSync = 3;
+  hltdc.Init.AccumulatedHBP = 14;
+  hltdc.Init.AccumulatedVBP = 5;
+  hltdc.Init.AccumulatedActiveW = 654;
+  hltdc.Init.AccumulatedActiveH = 485;
+  hltdc.Init.TotalWidth = 660;
+  hltdc.Init.TotalHeigh = 487;
+  hltdc.Init.Backcolor.Blue = 0;
+  hltdc.Init.Backcolor.Green = 0;
+  hltdc.Init.Backcolor.Red = 0;
+  if (HAL_LTDC_Init(&hltdc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  pLayerCfg.WindowX0 = 0;
+  pLayerCfg.WindowX1 = 0;
+  pLayerCfg.WindowY0 = 0;
+  pLayerCfg.WindowY1 = 0;
+  pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
+  pLayerCfg.Alpha = 0;
+  pLayerCfg.Alpha0 = 0;
+  pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
+  pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
+  pLayerCfg.FBStartAdress = 0;
+  pLayerCfg.ImageWidth = 0;
+  pLayerCfg.ImageHeight = 0;
+  pLayerCfg.Backcolor.Blue = 0;
+  pLayerCfg.Backcolor.Green = 0;
+  pLayerCfg.Backcolor.Red = 0;
+  if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  pLayerCfg1.WindowX0 = 0;
+  pLayerCfg1.WindowX1 = 0;
+  pLayerCfg1.WindowY0 = 0;
+  pLayerCfg1.WindowY1 = 0;
+  pLayerCfg1.PixelFormat = LTDC_PIXEL_FORMAT_ARGB8888;
+  pLayerCfg1.Alpha = 0;
+  pLayerCfg1.Alpha0 = 0;
+  pLayerCfg1.BlendingFactor1 = LTDC_BLENDING_FACTOR1_CA;
+  pLayerCfg1.BlendingFactor2 = LTDC_BLENDING_FACTOR2_CA;
+  pLayerCfg1.FBStartAdress = 0;
+  pLayerCfg1.ImageWidth = 0;
+  pLayerCfg1.ImageHeight = 0;
+  pLayerCfg1.Backcolor.Blue = 0;
+  pLayerCfg1.Backcolor.Green = 0;
+  pLayerCfg1.Backcolor.Red = 0;
+  if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg1, 1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN LTDC_Init 2 */
+
+  /* USER CODE END LTDC_Init 2 */
+
+}
+
+/**
+  * @brief SAI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SAI1_Init(void)
+{
+
+  /* USER CODE BEGIN SAI1_Init 0 */
+
+  /* USER CODE END SAI1_Init 0 */
+
+  /* USER CODE BEGIN SAI1_Init 1 */
+
+  /* USER CODE END SAI1_Init 1 */
+  hsai_BlockA1.Instance = SAI1_Block_A;
+  hsai_BlockA1.Init.Protocol = SAI_FREE_PROTOCOL;
+  hsai_BlockA1.Init.AudioMode = SAI_MODEMASTER_TX;
+  hsai_BlockA1.Init.DataSize = SAI_DATASIZE_8;
+  hsai_BlockA1.Init.FirstBit = SAI_FIRSTBIT_MSB;
+  hsai_BlockA1.Init.ClockStrobing = SAI_CLOCKSTROBING_FALLINGEDGE;
+  hsai_BlockA1.Init.Synchro = SAI_ASYNCHRONOUS;
+  hsai_BlockA1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
+  hsai_BlockA1.Init.NoDivider = SAI_MCK_OVERSAMPLING_DISABLE;
+  hsai_BlockA1.Init.MckOverSampling = SAI_MCK_OVERSAMPLING_DISABLE;
+  hsai_BlockA1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
+  hsai_BlockA1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_192K;
+  hsai_BlockA1.Init.SynchroExt = SAI_SYNCEXT_DISABLE;
+  hsai_BlockA1.Init.MonoStereoMode = SAI_STEREOMODE;
+  hsai_BlockA1.Init.CompandingMode = SAI_NOCOMPANDING;
+  hsai_BlockA1.Init.TriState = SAI_OUTPUT_NOTRELEASED;
+  hsai_BlockA1.Init.PdmInit.Activation = DISABLE;
+  hsai_BlockA1.Init.PdmInit.MicPairsNbr = 1;
+  hsai_BlockA1.Init.PdmInit.ClockEnable = SAI_PDM_CLOCK1_ENABLE;
+  hsai_BlockA1.FrameInit.FrameLength = 8;
+  hsai_BlockA1.FrameInit.ActiveFrameLength = 1;
+  hsai_BlockA1.FrameInit.FSDefinition = SAI_FS_STARTFRAME;
+  hsai_BlockA1.FrameInit.FSPolarity = SAI_FS_ACTIVE_LOW;
+  hsai_BlockA1.FrameInit.FSOffset = SAI_FS_FIRSTBIT;
+  hsai_BlockA1.SlotInit.FirstBitOffset = 0;
+  hsai_BlockA1.SlotInit.SlotSize = SAI_SLOTSIZE_DATASIZE;
+  hsai_BlockA1.SlotInit.SlotNumber = 1;
+  hsai_BlockA1.SlotInit.SlotActive = 0x00000000;
+  if (HAL_SAI_Init(&hsai_BlockA1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  hsai_BlockB1.Instance = SAI1_Block_B;
+  hsai_BlockB1.Init.Protocol = SAI_SPDIF_PROTOCOL;
+  hsai_BlockB1.Init.AudioMode = SAI_MODEMASTER_TX;
+  hsai_BlockB1.Init.Synchro = SAI_ASYNCHRONOUS;
+  hsai_BlockB1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
+  hsai_BlockB1.Init.MckOverSampling = SAI_MCK_OVERSAMPLING_DISABLE;
+  hsai_BlockB1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
+  hsai_BlockB1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_48K;
+  hsai_BlockB1.Init.SynchroExt = SAI_SYNCEXT_DISABLE;
+  hsai_BlockB1.Init.MonoStereoMode = SAI_STEREOMODE;
+  hsai_BlockB1.Init.CompandingMode = SAI_NOCOMPANDING;
+  hsai_BlockB1.Init.PdmInit.Activation = DISABLE;
+  hsai_BlockB1.Init.PdmInit.MicPairsNbr = 1;
+  hsai_BlockB1.Init.PdmInit.ClockEnable = SAI_PDM_CLOCK1_ENABLE;
+  if (HAL_SAI_Init(&hsai_BlockB1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SAI1_Init 2 */
+
+  /* USER CODE END SAI1_Init 2 */
+
 }
 
 /**
@@ -290,6 +605,53 @@ static void MX_USART1_UART_Init(void)
 
 }
 
+/* FMC initialization function */
+void MX_FMC_Init(void)
+{
+
+  /* USER CODE BEGIN FMC_Init 0 */
+
+  /* USER CODE END FMC_Init 0 */
+
+  FMC_SDRAM_TimingTypeDef SdramTiming = {0};
+
+  /* USER CODE BEGIN FMC_Init 1 */
+
+  /* USER CODE END FMC_Init 1 */
+
+  /** Perform the SDRAM1 memory initialization sequence
+  */
+  hsdram1.Instance = FMC_SDRAM_DEVICE;
+  /* hsdram1.Init */
+  hsdram1.Init.SDBank = FMC_SDRAM_BANK2;
+  hsdram1.Init.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_8;
+  hsdram1.Init.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_13;
+  hsdram1.Init.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_32;
+  hsdram1.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_2;
+  hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_1;
+  hsdram1.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
+  hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_DISABLE;
+  hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_DISABLE;
+  hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_0;
+  /* SdramTiming */
+  SdramTiming.LoadToActiveDelay = 16;
+  SdramTiming.ExitSelfRefreshDelay = 16;
+  SdramTiming.SelfRefreshTime = 16;
+  SdramTiming.RowCycleDelay = 16;
+  SdramTiming.WriteRecoveryTime = 16;
+  SdramTiming.RPDelay = 16;
+  SdramTiming.RCDDelay = 16;
+
+  if (HAL_SDRAM_Init(&hsdram1, &SdramTiming) != HAL_OK)
+  {
+    Error_Handler( );
+  }
+
+  /* USER CODE BEGIN FMC_Init 2 */
+
+  /* USER CODE END FMC_Init 2 */
+}
+
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -303,9 +665,15 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOI_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOJ_CLK_ENABLE();
 
   /*Configure GPIO pin : CEC_CK_MCO1_Pin */
   GPIO_InitStruct.Pin = CEC_CK_MCO1_Pin;

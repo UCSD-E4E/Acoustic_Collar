@@ -75,9 +75,6 @@ QSPI_HandleTypeDef hqspi;
 
 RTC_HandleTypeDef hrtc;
 
-SAI_HandleTypeDef hsai_BlockA1;
-SAI_HandleTypeDef hsai_BlockB1;
-
 SD_HandleTypeDef hsd1;
 
 SPDIFRX_HandleTypeDef hspdif1;
@@ -93,8 +90,6 @@ UART_HandleTypeDef huart1;
 
 PCD_HandleTypeDef hpcd_USB_OTG_HS;
 
-SDRAM_HandleTypeDef hsdram1;
-
    uint8_t cec_receive_buffer[16];
 /* USER CODE BEGIN PV */
 
@@ -105,11 +100,9 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_ADC3_Init(void);
 static void MX_ETH_Init(void);
-static void MX_FMC_Init(void);
 static void MX_HDMI_CEC_Init(void);
 static void MX_QUADSPI_Init(void);
 static void MX_RTC_Init(void);
-static void MX_SAI1_Init(void);
 static void MX_SDMMC1_SD_Init(void);
 static void MX_SPDIFRX1_Init(void);
 static void MX_SPI2_Init(void);
@@ -171,11 +164,9 @@ int main(void)
   MX_ADC1_Init();
   MX_ADC3_Init();
   MX_ETH_Init();
-  MX_FMC_Init();
   MX_HDMI_CEC_Init();
   MX_QUADSPI_Init();
   MX_RTC_Init();
-  MX_SAI1_Init();
   MX_SDMMC1_SD_Init();
   MX_SPDIFRX1_Init();
   MX_SPI2_Init();
@@ -209,16 +200,26 @@ void PeriphCommonClock_Config(void)
 
   /** Initializes the peripherals clock
   */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_SAI1
+                              |RCC_PERIPHCLK_LTDC;
   PeriphClkInitStruct.PLL2.PLL2M = 2;
-  PeriphClkInitStruct.PLL2.PLL2N = 12;
+  PeriphClkInitStruct.PLL2.PLL2N = 24;
   PeriphClkInitStruct.PLL2.PLL2P = 2;
   PeriphClkInitStruct.PLL2.PLL2Q = 2;
   PeriphClkInitStruct.PLL2.PLL2R = 2;
   PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_3;
-  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOMEDIUM;
+  PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
   PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
-  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL2;
+  PeriphClkInitStruct.PLL3.PLL3M = 5;
+  PeriphClkInitStruct.PLL3.PLL3N = 32;
+  PeriphClkInitStruct.PLL3.PLL3P = 2;
+  PeriphClkInitStruct.PLL3.PLL3Q = 2;
+  PeriphClkInitStruct.PLL3.PLL3R = 2;
+  PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_2;
+  PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOMEDIUM;
+  PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
+  PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL2;
+  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL3;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -523,77 +524,6 @@ static void MX_RTC_Init(void)
   /* USER CODE BEGIN RTC_Init 2 */
 
   /* USER CODE END RTC_Init 2 */
-
-}
-
-/**
-  * @brief SAI1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SAI1_Init(void)
-{
-
-  /* USER CODE BEGIN SAI1_Init 0 */
-
-  /* USER CODE END SAI1_Init 0 */
-
-  /* USER CODE BEGIN SAI1_Init 1 */
-
-  /* USER CODE END SAI1_Init 1 */
-  hsai_BlockA1.Instance = SAI1_Block_A;
-  hsai_BlockA1.Init.Protocol = SAI_FREE_PROTOCOL;
-  hsai_BlockA1.Init.AudioMode = SAI_MODEMASTER_TX;
-  hsai_BlockA1.Init.DataSize = SAI_DATASIZE_8;
-  hsai_BlockA1.Init.FirstBit = SAI_FIRSTBIT_MSB;
-  hsai_BlockA1.Init.ClockStrobing = SAI_CLOCKSTROBING_FALLINGEDGE;
-  hsai_BlockA1.Init.Synchro = SAI_ASYNCHRONOUS;
-  hsai_BlockA1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
-  hsai_BlockA1.Init.NoDivider = SAI_MCK_OVERSAMPLING_DISABLE;
-  hsai_BlockA1.Init.MckOverSampling = SAI_MCK_OVERSAMPLING_DISABLE;
-  hsai_BlockA1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
-  hsai_BlockA1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_192K;
-  hsai_BlockA1.Init.SynchroExt = SAI_SYNCEXT_DISABLE;
-  hsai_BlockA1.Init.MonoStereoMode = SAI_STEREOMODE;
-  hsai_BlockA1.Init.CompandingMode = SAI_NOCOMPANDING;
-  hsai_BlockA1.Init.TriState = SAI_OUTPUT_NOTRELEASED;
-  hsai_BlockA1.Init.PdmInit.Activation = DISABLE;
-  hsai_BlockA1.Init.PdmInit.MicPairsNbr = 1;
-  hsai_BlockA1.Init.PdmInit.ClockEnable = SAI_PDM_CLOCK1_ENABLE;
-  hsai_BlockA1.FrameInit.FrameLength = 8;
-  hsai_BlockA1.FrameInit.ActiveFrameLength = 1;
-  hsai_BlockA1.FrameInit.FSDefinition = SAI_FS_STARTFRAME;
-  hsai_BlockA1.FrameInit.FSPolarity = SAI_FS_ACTIVE_LOW;
-  hsai_BlockA1.FrameInit.FSOffset = SAI_FS_FIRSTBIT;
-  hsai_BlockA1.SlotInit.FirstBitOffset = 0;
-  hsai_BlockA1.SlotInit.SlotSize = SAI_SLOTSIZE_DATASIZE;
-  hsai_BlockA1.SlotInit.SlotNumber = 1;
-  hsai_BlockA1.SlotInit.SlotActive = 0x00000000;
-  if (HAL_SAI_Init(&hsai_BlockA1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  hsai_BlockB1.Instance = SAI1_Block_B;
-  hsai_BlockB1.Init.Protocol = SAI_SPDIF_PROTOCOL;
-  hsai_BlockB1.Init.AudioMode = SAI_MODEMASTER_TX;
-  hsai_BlockB1.Init.Synchro = SAI_ASYNCHRONOUS;
-  hsai_BlockB1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
-  hsai_BlockB1.Init.MckOverSampling = SAI_MCK_OVERSAMPLING_DISABLE;
-  hsai_BlockB1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
-  hsai_BlockB1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_48K;
-  hsai_BlockB1.Init.SynchroExt = SAI_SYNCEXT_DISABLE;
-  hsai_BlockB1.Init.MonoStereoMode = SAI_STEREOMODE;
-  hsai_BlockB1.Init.CompandingMode = SAI_NOCOMPANDING;
-  hsai_BlockB1.Init.PdmInit.Activation = DISABLE;
-  hsai_BlockB1.Init.PdmInit.MicPairsNbr = 1;
-  hsai_BlockB1.Init.PdmInit.ClockEnable = SAI_PDM_CLOCK1_ENABLE;
-  if (HAL_SAI_Init(&hsai_BlockB1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN SAI1_Init 2 */
-
-  /* USER CODE END SAI1_Init 2 */
 
 }
 
@@ -1009,53 +939,6 @@ static void MX_USB_OTG_HS_PCD_Init(void)
 
 }
 
-/* FMC initialization function */
-void MX_FMC_Init(void)
-{
-
-  /* USER CODE BEGIN FMC_Init 0 */
-
-  /* USER CODE END FMC_Init 0 */
-
-  FMC_SDRAM_TimingTypeDef SdramTiming = {0};
-
-  /* USER CODE BEGIN FMC_Init 1 */
-
-  /* USER CODE END FMC_Init 1 */
-
-  /** Perform the SDRAM1 memory initialization sequence
-  */
-  hsdram1.Instance = FMC_SDRAM_DEVICE;
-  /* hsdram1.Init */
-  hsdram1.Init.SDBank = FMC_SDRAM_BANK2;
-  hsdram1.Init.ColumnBitsNumber = FMC_SDRAM_COLUMN_BITS_NUM_8;
-  hsdram1.Init.RowBitsNumber = FMC_SDRAM_ROW_BITS_NUM_13;
-  hsdram1.Init.MemoryDataWidth = FMC_SDRAM_MEM_BUS_WIDTH_32;
-  hsdram1.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_2;
-  hsdram1.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_1;
-  hsdram1.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
-  hsdram1.Init.SDClockPeriod = FMC_SDRAM_CLOCK_DISABLE;
-  hsdram1.Init.ReadBurst = FMC_SDRAM_RBURST_DISABLE;
-  hsdram1.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_0;
-  /* SdramTiming */
-  SdramTiming.LoadToActiveDelay = 16;
-  SdramTiming.ExitSelfRefreshDelay = 16;
-  SdramTiming.SelfRefreshTime = 16;
-  SdramTiming.RowCycleDelay = 16;
-  SdramTiming.WriteRecoveryTime = 16;
-  SdramTiming.RPDelay = 16;
-  SdramTiming.RCDDelay = 16;
-
-  if (HAL_SDRAM_Init(&hsdram1, &SdramTiming) != HAL_OK)
-  {
-    Error_Handler( );
-  }
-
-  /* USER CODE BEGIN FMC_Init 2 */
-
-  /* USER CODE END FMC_Init 2 */
-}
-
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -1068,17 +951,16 @@ static void MX_GPIO_Init(void)
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOI_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOE_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOI_CLK_ENABLE();
   __HAL_RCC_GPIOK_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOJ_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
