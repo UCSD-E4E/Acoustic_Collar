@@ -29,14 +29,29 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32h747i_discovery.h"
+#include "stm32h747i_discovery_audio.h"
+#include "stm32h747i_discovery_conf.h"
+#include "stm32h747i_discovery_sdram.h"
+#include "stm32h7xx_hal.h"
+#include "string.h"
+#include <stdint.h>
 
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 
+typedef enum
+{
+    AUDIO_ERROR_NONE = 0,
+    AUDIO_ERROR_NOTREADY,
+    AUDIO_ERROR_IO,
+    AUDIO_ERROR_EOF,
+} AUDIO_ErrorTypeDef;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -46,7 +61,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define RECORD_BUFFER_SIZE        4096
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

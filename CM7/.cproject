@@ -51,13 +51,12 @@
 									<listOptionValue builtIn="false" value="../X-CUBE-AI"/>
 									<listOptionValue builtIn="false" value="&quot;../..\CM7\Drivers\BSP\Components&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;../..\Drivers\CMSIS\DSP\Include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;../..\Drivers\CMSIS\Include&quot;"/>
+									<listOptionValue builtIn="false" value="../../Drivers/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../../CM7/Drivers/BSP/Components/Common"/>
 									<listOptionValue builtIn="false" value="../../Drivers/CMSIS/Device/ST/STM32H7xx/Include"/>
-									<listOptionValue builtIn="false" value="&quot;../..\Middlewares\ST\AI\Inc&quot;"/>
-									<listOptionValue builtIn="false" value="../../Drivers/CMSIS/Include"/>
-									<listOptionValue builtIn="false" value="../X-CUBE-AI/App"/>
 									<listOptionValue builtIn="false" value="../../Middlewares/ST/AI/Inc"/>
+									<listOptionValue builtIn="false" value="../X-CUBE-AI/App"/>
+									<listOptionValue builtIn="false" value="&quot;../..\CM7\Drivers\BSP\STM32H747I-DISCO&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.490802497" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
