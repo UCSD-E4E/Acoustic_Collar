@@ -113,6 +113,13 @@ static void MX_FMC_Init(void);
 
 /* USER CODE END 0 */
 
+
+int _write(int file, char *ptr, int len) {
+    HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, HAL_MAX_DELAY);
+    return len;
+}
+
+
 /**
   * @brief  The application entry point.
   * @retval int
@@ -195,13 +202,13 @@ int main(void)
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
-	MicrophoneStartProcess();
-
+	//MicrophoneStartProcess();
+	printf("some print");
 	while (1)
 	{
 	/* USER CODE END WHILE */
-		printf("Recording...");
-		MX_X_CUBE_AI_Process();
+		printf("Recording...\n");
+		//MX_X_CUBE_AI_Process();
 	/* USER CODE BEGIN 3 */
 
 	}
@@ -234,7 +241,7 @@ void MicrophoneStartProcess()
 	BSP_AUDIO_IN_RecordPDM(2, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE);
 
 	// TODO: remove audio playback - just for testing audio recording
-	//BSP_AUDIO_OUT_Play(0, (uint8_t*)&RecPlayback, RECORD_BUFFER_SIZE);
+	BSP_AUDIO_OUT_Play(0, (uint8_t*)&RecPlayback, RECORD_BUFFER_SIZE);
 }
 
 /**
