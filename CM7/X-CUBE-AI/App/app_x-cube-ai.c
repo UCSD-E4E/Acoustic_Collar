@@ -54,8 +54,8 @@
 #include "app_x-cube-ai.h"
 #include "main.h"
 #include "ai_datatypes_defines.h"
-#include "tinyaudiocnn.h"
-#include "tinyaudiocnn_data.h"
+#include "tinycnnbuow.h"
+#include "tinycnnbuow_data.h"
 #include "mel_spec_buffer.h"
 #include "main.h"
 #include "mel_spectrogram.h"
@@ -74,24 +74,24 @@ int _write(int file, char *ptr, int len)
 
 /* IO buffers ----------------------------------------------------------------*/
 
-#if !defined(AI_TINYAUDIOCNN_INPUTS_IN_ACTIVATIONS)
-AI_ALIGNED(4) ai_i8 data_in_1[AI_TINYAUDIOCNN_IN_1_SIZE_BYTES];
-ai_i8* data_ins[AI_TINYAUDIOCNN_IN_NUM] = {
+#if !defined(AI_TINYCNNBUOW_INPUTS_IN_ACTIVATIONS)
+AI_ALIGNED(4) ai_i8 data_in_1[AI_TINYCNNBUOW_IN_1_SIZE_BYTES];
+ai_i8* data_ins[AI_TINYCNNBUOW_IN_NUM] = {
 data_in_1
 };
 #else
-ai_i8* data_ins[AI_TINYAUDIOCNN_IN_NUM] = {
+ai_i8* data_ins[AI_TINYCNNBUOW_IN_NUM] = {
 NULL
 };
 #endif
 
-#if !defined(AI_TINYAUDIOCNN_OUTPUTS_IN_ACTIVATIONS)
-AI_ALIGNED(4) ai_i8 data_out_1[AI_TINYAUDIOCNN_OUT_1_SIZE_BYTES];
-ai_i8* data_outs[AI_TINYAUDIOCNN_OUT_NUM] = {
+#if !defined(AI_TINYCNNBUOW_OUTPUTS_IN_ACTIVATIONS)
+AI_ALIGNED(4) ai_i8 data_out_1[AI_TINYCNNBUOW_OUT_1_SIZE_BYTES];
+ai_i8* data_outs[AI_TINYCNNBUOW_OUT_NUM] = {
 data_out_1
 };
 #else
-ai_i8* data_outs[AI_TINYAUDIOCNN_OUT_NUM] = {
+ai_i8* data_outs[AI_TINYCNNBUOW_OUT_NUM] = {
 NULL
 };
 #endif
@@ -99,13 +99,13 @@ NULL
 /* Activations buffers -------------------------------------------------------*/
 
 AI_ALIGNED(32)
-static uint8_t pool0[AI_TINYAUDIOCNN_DATA_ACTIVATION_1_SIZE];
+static uint8_t pool0[AI_TINYCNNBUOW_DATA_ACTIVATION_1_SIZE];
 
 ai_handle data_activations0[] = {pool0};
 
 /* AI objects ----------------------------------------------------------------*/
 
-static ai_handle tinyaudiocnn = AI_HANDLE_NULL;
+static ai_handle tinycnnbuow = AI_HANDLE_NULL;
 
 static ai_buffer* ai_input;
 static ai_buffer* ai_output;
@@ -131,37 +131,37 @@ static int ai_boostrap(ai_handle *act_addr)
   ai_error err;
 
   /* Create and initialize an instance of the model */
-  err = ai_tinyaudiocnn_create_and_init(&tinyaudiocnn, act_addr, NULL);
+  err = ai_tinycnnbuow_create_and_init(&tinycnnbuow, act_addr, NULL);
   if (err.type != AI_ERROR_NONE) {
-    ai_log_err(err, "ai_tinyaudiocnn_create_and_init");
+    ai_log_err(err, "ai_tinycnnbuow_create_and_init");
     return -1;
   }
 
-  ai_input = ai_tinyaudiocnn_inputs_get(tinyaudiocnn, NULL);
-  ai_output = ai_tinyaudiocnn_outputs_get(tinyaudiocnn, NULL);
+  ai_input = ai_tinycnnbuow_inputs_get(tinycnnbuow, NULL);
+  ai_output = ai_tinycnnbuow_outputs_get(tinycnnbuow, NULL);
 
-#if defined(AI_TINYAUDIOCNN_INPUTS_IN_ACTIVATIONS)
+#if defined(AI_TINYCNNBUOW_INPUTS_IN_ACTIVATIONS)
   /*  In the case where "--allocate-inputs" option is used, memory buffer can be
    *  used from the activations buffer. This is not mandatory.
    */
-  for (int idx=0; idx < AI_TINYAUDIOCNN_IN_NUM; idx++) {
+  for (int idx=0; idx < AI_TINYCNNBUOW_IN_NUM; idx++) {
 	data_ins[idx] = ai_input[idx].data;
   }
 #else
-  for (int idx=0; idx < AI_TINYAUDIOCNN_IN_NUM; idx++) {
+  for (int idx=0; idx < AI_TINYCNNBUOW_IN_NUM; idx++) {
 	  ai_input[idx].data = data_ins[idx];
   }
 #endif
 
-#if defined(AI_TINYAUDIOCNN_OUTPUTS_IN_ACTIVATIONS)
+#if defined(AI_TINYCNNBUOW_OUTPUTS_IN_ACTIVATIONS)
   /*  In the case where "--allocate-outputs" option is used, memory buffer can be
    *  used from the activations buffer. This is no mandatory.
    */
-  for (int idx=0; idx < AI_TINYAUDIOCNN_OUT_NUM; idx++) {
+  for (int idx=0; idx < AI_TINYCNNBUOW_OUT_NUM; idx++) {
 	data_outs[idx] = ai_output[idx].data;
   }
 #else
-  for (int idx=0; idx < AI_TINYAUDIOCNN_OUT_NUM; idx++) {
+  for (int idx=0; idx < AI_TINYCNNBUOW_OUT_NUM; idx++) {
 	ai_output[idx].data = data_outs[idx];
   }
 #endif
@@ -173,10 +173,10 @@ static int ai_run(void)
 {
   ai_i32 batch;
 
-  batch = ai_tinyaudiocnn_run(tinyaudiocnn, ai_input, ai_output);
+  batch = ai_tinycnnbuow_run(tinycnnbuow, ai_input, ai_output);
   if (batch != 1) {
-    ai_log_err(ai_tinyaudiocnn_get_error(tinyaudiocnn),
-        "ai_tinyaudiocnn_run");
+    ai_log_err(ai_tinycnnbuow_get_error(tinycnnbuow),
+        "ai_tinycnnbuow_run");
     return -1;
   }
 
@@ -227,7 +227,7 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
 
     float *dst = (float *)data[0];
 
-    for (int i = 0; i < AI_TINYAUDIOCNN_IN_1_SIZE; ++i) {
+    for (int i = 0; i < AI_TINYCNNBUOW_IN_1_SIZE; ++i) {
         dst[i] = mel_spec[i];  // 64 * 258 = 16512
     }
 
@@ -254,7 +254,7 @@ int post_process(ai_i8* data[])
 
     int max_index = 0;
     float max_value = predictions[0];
-    for (int i = 0; i < AI_TINYAUDIOCNN_OUT_1_SIZE; ++i) {
+    for (int i = 0; i < AI_TINYCNNBUOW_OUT_1_SIZE; ++i) {
         if (predictions[i] > max_value) {
             max_value = predictions[i];
             max_index = i;
@@ -295,7 +295,7 @@ void MX_X_CUBE_AI_Process(uint16_t *pcm_buffer)
     /* USER CODE BEGIN 6 */
   int res = -1;
 
-  if (tinyaudiocnn) {
+  if (tinycnnbuow) {
 
     do {
       /* 1 - acquire and pre-process input data */
