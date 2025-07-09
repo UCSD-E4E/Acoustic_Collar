@@ -48,8 +48,8 @@ ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]);
   ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
 #endif
 static uint32_t AudioFreq[9] = {8000 ,11025, 16000, 22050, 32000, 44100, 48000, 96000, 192000};
-ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]);
-ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]);
+extern ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]);
+extern ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]);
 uint32_t VolumeLevel = 80;
 uint32_t  InState = 0;
 uint32_t  OutState = 0;
@@ -58,7 +58,7 @@ uint16_t playbackBuf[RECORD_BUFFER_SIZE*2];
 BSP_AUDIO_Init_t  AudioInInit;
 BSP_AUDIO_Init_t  AudioOutInit;
 /* Pointer to record_data */
-uint32_t playbackPtr;
+extern uint32_t playbackPtr;
 uint32_t AudioBufferOffset;
 /* Private function prototypes -----------------------------------------------*/
 typedef enum {
@@ -79,7 +79,7 @@ void AudioRecord_demo(void)
 {
   uint32_t channel_nbr = 2;
 
-  uint32_t x_size, y_size;
+//  uint32_t x_size, y_size;
 
 //  BSP_LCD_GetXSize(0, &x_size);
 //  BSP_LCD_GetYSize(0, &y_size);
@@ -152,8 +152,8 @@ void  BSP_AUDIO_IN_TransferComplete_CallBack(uint32_t Instance)
 
     // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
     printf("processing 2nd half of buffer");
-
-    MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+    AI_PROCESS = 1; //signal AI processing
+    //MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
 
     playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
     if(playbackPtr >= RECORD_BUFFER_SIZE)
@@ -185,7 +185,8 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
 
     // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
     printf("processing 1st half of buffer");
-    MX_X_CUBE_AI_Process(RecPlayback[playbackPtr]);
+    AI_PROCESS = 1; //signal AI processing
+    //MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
 
     playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
     if(playbackPtr >= RECORD_BUFFER_SIZE)

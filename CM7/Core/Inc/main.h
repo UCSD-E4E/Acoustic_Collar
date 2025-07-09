@@ -39,6 +39,7 @@ extern "C" {
 #include "stm32h7xx_hal.h"
 #include "string.h"
 #include <stdint.h>
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -68,7 +69,10 @@ typedef enum
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+extern uint8_t AI_PROCESS;
+extern uint16_t RecPlayback[2 * RECORD_BUFFER_SIZE];
+extern uint16_t PlaybackBuffer[2 * RECORD_BUFFER_SIZE];
+extern uint32_t playbackPtr;
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

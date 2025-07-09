@@ -74,7 +74,10 @@ static void MX_DSIHOST_DSI_Init(void);
 static void MX_LTDC_Init(void);
 static void MX_FMC_Init(void);
 /* USER CODE BEGIN PFP */
-
+uint8_t AI_PROCESS = 0; //flag to signal AI processing
+ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]);
+ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]);
+uint32_t playbackPtr;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -167,7 +170,9 @@ Error_Handler();
   while (1)
   {
     /* USER CODE END WHILE */
-
+	if(AI_PROCESS){
+		MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+	}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
