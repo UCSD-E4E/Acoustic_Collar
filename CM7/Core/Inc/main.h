@@ -28,6 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
+#include "stm32h747i_discovery_audio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -36,7 +37,14 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+typedef enum
+{
+    AUDIO_ERROR_NONE = 0,
+    AUDIO_ERROR_NOTREADY,
+    AUDIO_ERROR_IO,
+    AUDIO_ERROR_EOF,
+} AUDIO_ErrorTypeDef;
+#define RECORD_BUFFER_SIZE        4096
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
