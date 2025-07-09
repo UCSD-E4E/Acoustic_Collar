@@ -59,7 +59,6 @@ typedef enum
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void MicrophoneStartProcess();
 
 /* USER CODE BEGIN EFP */
 
