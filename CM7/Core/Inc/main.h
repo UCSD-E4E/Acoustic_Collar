@@ -30,8 +30,17 @@ extern "C" {
 #include "stm32h7xx_hal.h"
 #include "stm32h747i_discovery_audio.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stm32h747i_discovery.h"
+#include "stm32h747i_discovery_audio.h"
+#include "stm32h747i_discovery_conf.h"
+#include "stm32h747i_discovery_sdram.h"
+#include "stm32h7xx_hal.h"
+#include "string.h"
+#include <stdint.h>
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -44,7 +53,6 @@ typedef enum
     AUDIO_ERROR_IO,
     AUDIO_ERROR_EOF,
 } AUDIO_ErrorTypeDef;
-#define RECORD_BUFFER_SIZE        4096
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -54,14 +62,17 @@ typedef enum
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define RECORD_BUFFER_SIZE        4096
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+extern uint8_t AI_PROCESS;
+extern uint16_t RecPlayback[2 * RECORD_BUFFER_SIZE];
+extern uint16_t PlaybackBuffer[2 * RECORD_BUFFER_SIZE];
+extern uint32_t playbackPtr;
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
