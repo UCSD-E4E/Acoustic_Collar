@@ -28,7 +28,6 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
-#include "stm32h747i_discovery_audio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -103,10 +102,6 @@ void Error_Handler(void);
 #define FMC_SDCAS_GPIO_Port GPIOG
 #define FMC_D2_Pin GPIO_PIN_0
 #define FMC_D2_GPIO_Port GPIOD
-#define STLINK_TX_Pin GPIO_PIN_10
-#define STLINK_TX_GPIO_Port GPIOA
-#define STLINK_RX_Pin GPIO_PIN_9
-#define STLINK_RX_GPIO_Port GPIOA
 #define FMC_D21_Pin GPIO_PIN_13
 #define FMC_D21_GPIO_Port GPIOH
 #define FMC_D30_Pin GPIO_PIN_9
