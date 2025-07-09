@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <stdio.h>
 #include "app_x-cube-ai.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -59,6 +60,36 @@ UART_HandleTypeDef huart1;
 
 SDRAM_HandleTypeDef hsdram1;
 
+/* AUDIO VARIABLES INIT */
+extern AUDIO_ErrorTypeDef AUDIO_Start(uint32_t audio_start_address, uint32_t audio_file_size);
+#define AUDIO_FREQUENCY            16000U
+#define AUDIO_IN_PDM_BUFFER_SIZE  (uint32_t)(128*AUDIO_FREQUENCY/16000*2)
+#define AUDIO_NB_BLOCKS    ((uint32_t)4)
+#define AUDIO_BLOCK_SIZE   ((uint32_t)0xFFFE)
+
+#if defined ( __CC_ARM )  /* !< ARM Compiler */
+  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D1")));
+
+#elif defined ( __ICCARM__ )  /* !< ICCARM Compiler */
+  #pragma location=0x38000000
+ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]);
+#elif defined ( __GNUC__ )  /* !< GNU Compiler */
+  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D1")));
+#endif
+ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]);
+ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]);
+static uint32_t AudioFreq[9] = {8000 ,11025, 16000, 22050, 32000, 44100, 48000, 96000, 192000};
+uint32_t VolumeLevel = 80;
+uint32_t  InState = 0;
+uint32_t  OutState = 0;
+uint32_t *AudioFreq_ptr;
+uint16_t playbackBuf[RECORD_BUFFER_SIZE*2];
+BSP_AUDIO_Init_t  AudioInInit;
+BSP_AUDIO_Init_t  AudioOutInit;
+/* Pointer to record_data */
+uint32_t playbackPtr;
+uint32_t AudioBufferOffset;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -89,89 +120,121 @@ static void MX_FMC_Init(void);
 int main(void)
 {
 
-  /* USER CODE BEGIN 1 */
+	/* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
-/* USER CODE BEGIN Boot_Mode_Sequence_0 */
-  int32_t timeout;
-/* USER CODE END Boot_Mode_Sequence_0 */
+	/* USER CODE END 1 */
+	/* USER CODE BEGIN Boot_Mode_Sequence_0 */
+	int32_t timeout;
+	/* USER CODE END Boot_Mode_Sequence_0 */
 
-  /* Enable the CPU Cache */
+	/* Enable the CPU Cache */
 
-  /* Enable I-Cache---------------------------------------------------------*/
-  SCB_EnableICache();
+	/* Enable I-Cache---------------------------------------------------------*/
+	SCB_EnableICache();
 
-  /* Enable D-Cache---------------------------------------------------------*/
-  SCB_EnableDCache();
+	/* Enable D-Cache---------------------------------------------------------*/
+	SCB_EnableDCache();
 
-/* USER CODE BEGIN Boot_Mode_Sequence_1 */
-  /* Wait until CPU2 boots and enters in stop mode or timeout*/
-  timeout = 0xFFFF;
-  while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) && (timeout-- > 0));
-  if ( timeout < 0 )
-  {
-  Error_Handler();
-  }
-/* USER CODE END Boot_Mode_Sequence_1 */
-  /* MCU Configuration--------------------------------------------------------*/
+	/* USER CODE BEGIN Boot_Mode_Sequence_1 */
+	/* Wait until CPU2 boots and enters in stop mode or timeout*/
+	timeout = 0xFFFF;
+	while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) && (timeout-- > 0));
+	if ( timeout < 0 )
+	{
+		Error_Handler();
+	}
+	/* USER CODE END Boot_Mode_Sequence_1 */
+	/* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  /* USER CODE BEGIN Init */
+	/* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+	/* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	/* Configure the system clock */
+	SystemClock_Config();
 
-  /* Configure the peripherals common clocks */
-  PeriphCommonClock_Config();
-/* USER CODE BEGIN Boot_Mode_Sequence_2 */
-/* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
-HSEM notification */
-/*HW semaphore Clock enable*/
-__HAL_RCC_HSEM_CLK_ENABLE();
-/*Take HSEM */
-HAL_HSEM_FastTake(HSEM_ID_0);
-/*Release HSEM in order to notify the CPU2(CM4)*/
-HAL_HSEM_Release(HSEM_ID_0,0);
-/* wait until CPU2 wakes up from stop mode */
-timeout = 0xFFFF;
-while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) == RESET) && (timeout-- > 0));
-if ( timeout < 0 )
-{
-Error_Handler();
+	/* Configure the peripherals common clocks */
+	PeriphCommonClock_Config();
+	/* USER CODE BEGIN Boot_Mode_Sequence_2 */
+	/* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
+	HSEM notification */
+	/*HW semaphore Clock enable*/
+	__HAL_RCC_HSEM_CLK_ENABLE();
+	/*Take HSEM */
+	HAL_HSEM_FastTake(HSEM_ID_0);
+	/*Release HSEM in order to notify the CPU2(CM4)*/
+	HAL_HSEM_Release(HSEM_ID_0,0);
+	/* wait until CPU2 wakes up from stop mode */
+	timeout = 0xFFFF;
+	while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) == RESET) && (timeout-- > 0));
+	if ( timeout < 0 )
+	{
+		Error_Handler();
+	}
+	/* USER CODE END Boot_Mode_Sequence_2 */
+
+	/* USER CODE BEGIN SysInit */
+
+	/* USER CODE END SysInit */
+
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_USART1_UART_Init();
+	MX_SAI1_Init();
+	MX_DMA2D_Init();
+	MX_DSIHOST_DSI_Init();
+	MX_LTDC_Init();
+	MX_FMC_Init();
+	MX_X_CUBE_AI_Init();
+	/* USER CODE BEGIN 2 */
+
+	/* USER CODE END 2 */
+
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	MicrophoneStartProcess();
+
+	while (1)
+	{
+	/* USER CODE END WHILE */
+		printf("Recording...");
+		MX_X_CUBE_AI_Process();
+	/* USER CODE BEGIN 3 */
+
+	}
+	/* USER CODE END 3 */
 }
-/* USER CODE END Boot_Mode_Sequence_2 */
 
-  /* USER CODE BEGIN SysInit */
+void MicrophoneStartProcess()
+{
+	uint32_t channel_nbr = 2;
+	AudioFreq_ptr = AudioFreq+2; /* AUDIO_FREQUENCY_16K; */
 
-  /* USER CODE END SysInit */
+	AudioOutInit.Device = AUDIO_OUT_DEVICE_AUTO;
+	AudioOutInit.ChannelsNbr = channel_nbr;
+	AudioOutInit.SampleRate = *AudioFreq_ptr;
+	AudioOutInit.BitsPerSample = AUDIO_RESOLUTION_16B;
+	AudioOutInit.Volume = VolumeLevel;
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART1_UART_Init();
-  MX_SAI1_Init();
-  MX_DMA2D_Init();
-  MX_DSIHOST_DSI_Init();
-  MX_LTDC_Init();
-  MX_FMC_Init();
-  MX_X_CUBE_AI_Init();
-  /* USER CODE BEGIN 2 */
+	AudioInInit.Device = AUDIO_IN_DEVICE_DIGITAL_MIC;
+	AudioInInit.ChannelsNbr = channel_nbr;
+	AudioInInit.SampleRate = *AudioFreq_ptr;
+	AudioInInit.BitsPerSample = AUDIO_RESOLUTION_16B;
+	AudioInInit.Volume = VolumeLevel;
 
-  /* USER CODE END 2 */
+	/* Initialize Audio Recorder with 2 channels to be used */
+	BSP_AUDIO_IN_Init(1, &AudioInInit);
+	BSP_AUDIO_IN_GetState(1, &InState);
+	BSP_AUDIO_OUT_Init(0, &AudioOutInit);
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
+	BSP_AUDIO_OUT_SetDevice(0, AUDIO_OUT_DEVICE_HEADPHONE);
+	BSP_AUDIO_IN_RecordPDM(2, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE);
 
-  MX_X_CUBE_AI_Process();
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+	// TODO: remove audio playback - just for testing audio recording
+	//BSP_AUDIO_OUT_Play(0, (uint8_t*)&RecPlayback, RECORD_BUFFER_SIZE);
 }
 
 /**
