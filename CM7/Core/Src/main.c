@@ -18,11 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <stdio.h>
 #include "app_x-cube-ai.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "audiohandler.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -85,97 +86,106 @@ uint32_t playbackPtr;
 
 /* USER CODE END 0 */
 
+
+int _write(int file, char *ptr, int len) {
+    HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, HAL_MAX_DELAY);
+    return len;
+}
+
+
 /**
   * @brief  The application entry point.
   * @retval int
   */
 int main(void)
 {
+	/* USER CODE BEGIN 1 */
 
-  /* USER CODE BEGIN 1 */
+	/* USER CODE END 1 */
+	/* USER CODE BEGIN Boot_Mode_Sequence_0 */
+	int32_t timeout;
+	/* USER CODE END Boot_Mode_Sequence_0 */
 
-  /* USER CODE END 1 */
-/* USER CODE BEGIN Boot_Mode_Sequence_0 */
-  int32_t timeout;
-/* USER CODE END Boot_Mode_Sequence_0 */
+	/* Enable the CPU Cache */
 
-  /* Enable the CPU Cache */
+	/* Enable I-Cache---------------------------------------------------------*/
+	SCB_EnableICache();
 
-  /* Enable I-Cache---------------------------------------------------------*/
-  SCB_EnableICache();
+	/* Enable D-Cache---------------------------------------------------------*/
+	SCB_EnableDCache();
 
-  /* Enable D-Cache---------------------------------------------------------*/
-  SCB_EnableDCache();
-
-/* USER CODE BEGIN Boot_Mode_Sequence_1 */
-  /* Wait until CPU2 boots and enters in stop mode or timeout*/
-  timeout = 0xFFFF;
-  while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) && (timeout-- > 0));
-  if ( timeout < 0 )
-  {
-  Error_Handler();
-  }
-/* USER CODE END Boot_Mode_Sequence_1 */
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* Configure the peripherals common clocks */
-  PeriphCommonClock_Config();
-/* USER CODE BEGIN Boot_Mode_Sequence_2 */
-/* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
-HSEM notification */
-/*HW semaphore Clock enable*/
-__HAL_RCC_HSEM_CLK_ENABLE();
-/*Take HSEM */
-HAL_HSEM_FastTake(HSEM_ID_0);
-/*Release HSEM in order to notify the CPU2(CM4)*/
-HAL_HSEM_Release(HSEM_ID_0,0);
-/* wait until CPU2 wakes up from stop mode */
-timeout = 0xFFFF;
-while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) == RESET) && (timeout-- > 0));
-if ( timeout < 0 )
-{
-Error_Handler();
-}
-/* USER CODE END Boot_Mode_Sequence_2 */
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART1_UART_Init();
-  MX_SAI1_Init();
-  MX_DMA2D_Init();
-  MX_DSIHOST_DSI_Init();
-  MX_LTDC_Init();
-  MX_FMC_Init();
-  MX_X_CUBE_AI_Init();
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
-	if(AI_PROCESS){
-		MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+	/* USER CODE BEGIN Boot_Mode_Sequence_1 */
+	/* Wait until CPU2 boots and enters in stop mode or timeout*/
+	timeout = 0xFFFF;
+	while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) && (timeout-- > 0));
+	if ( timeout < 0 )
+	{
+		Error_Handler();
 	}
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+	/* USER CODE END Boot_Mode_Sequence_1 */
+	/* MCU Configuration--------------------------------------------------------*/
+
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
+
+	/* USER CODE BEGIN Init */
+
+	/* USER CODE END Init */
+
+	/* Configure the system clock */
+	SystemClock_Config();
+
+	/* Configure the peripherals common clocks */
+	PeriphCommonClock_Config();
+	/* USER CODE BEGIN Boot_Mode_Sequence_2 */
+	/* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
+	HSEM notification */
+	/*HW semaphore Clock enable*/
+	__HAL_RCC_HSEM_CLK_ENABLE();
+	/*Take HSEM */
+	HAL_HSEM_FastTake(HSEM_ID_0);
+	/*Release HSEM in order to notify the CPU2(CM4)*/
+	HAL_HSEM_Release(HSEM_ID_0,0);
+	/* wait until CPU2 wakes up from stop mode */
+	timeout = 0xFFFF;
+	while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) == RESET) && (timeout-- > 0));
+	if ( timeout < 0 )
+	{
+		Error_Handler();
+	}
+	/* USER CODE END Boot_Mode_Sequence_2 */
+
+	/* USER CODE BEGIN SysInit */
+
+	/* USER CODE END SysInit */
+
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_USART1_UART_Init();
+	MX_SAI1_Init();
+	MX_DMA2D_Init();
+	MX_DSIHOST_DSI_Init();
+	MX_LTDC_Init();
+	MX_FMC_Init();
+	MX_X_CUBE_AI_Init();
+	/* USER CODE BEGIN 2 */
+
+	/* USER CODE END 2 */
+
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	MicrophoneStartProcess();
+	while (1)
+	{
+		printf("Recording (AGAIN!)...\n");
+		if(AI_PROCESS){
+		  MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+	  }
+	/* USER CODE END WHILE */
+	/* USER CODE BEGIN 3 */
+
+	}
+	/* USER CODE END 3 */
 }
 
 /**

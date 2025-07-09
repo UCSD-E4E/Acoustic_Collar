@@ -28,6 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
+#include "stm32h747i_discovery_audio.h"
 
 
 /* Private includes ----------------------------------------------------------*/
@@ -45,7 +46,6 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
 typedef enum
 {
     AUDIO_ERROR_NONE = 0,
