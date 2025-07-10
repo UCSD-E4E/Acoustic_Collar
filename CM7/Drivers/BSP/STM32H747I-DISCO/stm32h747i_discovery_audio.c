@@ -1310,10 +1310,6 @@ void HAL_SAI_TxHalfCpltCallback(SAI_HandleTypeDef *hsai)
   */
 void HAL_SAI_ErrorCallback(SAI_HandleTypeDef *hsai)
 {
-	if (__HAL_DMA_GET_FLAG(hsai->hdmarx, DMA_FLAG_TEIF1_5))
-		{
-			HAL_Delay(100);
-		}
   if(hsai->Instance == AUDIO_OUT_SAIx)
   {
   BSP_AUDIO_OUT_Error_CallBack(0);
