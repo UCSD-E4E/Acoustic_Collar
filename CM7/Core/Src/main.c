@@ -159,7 +159,7 @@ Error_Handler();
   MX_X_CUBE_AI_Init();
   /* USER CODE BEGIN 2 */
   // Initialize mel spectrogram configuration
-  float mel_spec_buffer[64 * 64]; // 64 mel bands, 64 time frames
+  float mel_spec_buffer[64 * 64]; // 64 mel bands x 64 time frames
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -169,7 +169,7 @@ Error_Handler();
     /* USER CODE END WHILE */
 	if(PCM_BUFFER_READY){
 		//conver PCM to spectrogram and infer species with AI model
-		conv_to_mel_spectrogram((uint16_t *)recordPDMBuf, mel_spec_buffer);
+		conv_to_mel_spectrogram((uint16_t *)recordPDMBuf, mel_spec_buffer, 64*64);
 		MX_X_CUBE_AI_Process(mel_spec_buffer);
 		PCM_BUFFER_READY = 0; //reset flag
 	}
@@ -698,20 +698,6 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
-  /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
-  /* USER CODE END Error_Handler_Debug */
-}
 
 #ifdef  USE_FULL_ASSERT
 /**

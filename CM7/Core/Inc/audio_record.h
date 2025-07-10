@@ -15,31 +15,16 @@
 #include "mel_spectrogram.h"
 #include "stm32h747i_discovery_audio.h"
 
+
 /** @addtogroup BSP_Examples
   * @{
   */
 
 /* Private typedef -----------------------------------------------------------*/
-typedef enum
-  {
-      AUDIO_ERROR_NONE = 0,
-      AUDIO_ERROR_NOTREADY,
-      AUDIO_ERROR_IO,
-      AUDIO_ERROR_EOF,
-  } AUDIO_ErrorTypeDef;
-
-  typedef enum {
-    BUFFER_OFFSET_NONE = 0,
-    BUFFER_OFFSET_HALF,
-    BUFFER_OFFSET_FULL,
-  }BUFFER_StateTypeDef;
 /* Private define ------------------------------------------------------------*/
 /* Audio frequency */
-extern AUDIO_ErrorTypeDef AUDIO_Start(uint32_t audio_start_address, uint32_t audio_file_size);
 #define AUDIO_FREQUENCY            16000U
 #define AUDIO_IN_PDM_BUFFER_SIZE  (uint32_t)(128*AUDIO_FREQUENCY/16000*2)
-#define AUDIO_NB_BLOCKS    ((uint32_t)4)
-#define AUDIO_BLOCK_SIZE   ((uint32_t)0xFFFE)
 #define RECORD_BUFFER_SIZE 4096
 /* Size of the recorder buffer */
 /* Private macro -------------------------------------------------------------*/
@@ -65,7 +50,7 @@ void AudioRecord_demo(void);
  * @param n_mels Number of mel bands
  * @param n_frames Number of time frames
  */
-void conv_to_mel_spectrogram(uint16_t *pcm_buffer, float *mel_spec_buffer);
+void conv_to_mel_spectrogram(uint16_t *pcm_buffer, float *mel_spec_buffer, uint16_t mel_spec_size);
 
 /*USER CODE END PFP */
 

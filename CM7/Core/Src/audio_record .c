@@ -18,18 +18,34 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
-#include "app_x-cube-ai.h"
+#include "audio_record.h"
+#include <string.h>
+#include <stdio.h>
 
 /** @addtogroup BSP_Examples
   * @{
   */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef enum{
+  AUDIO_ERROR_NONE = 0,
+  AUDIO_ERROR_NOTREADY,
+  AUDIO_ERROR_IO,
+  AUDIO_ERROR_EOF,
+} AUDIO_ErrorTypeDef;
 
+typedef enum {
+	BUFFER_OFFSET_NONE = 0,
+	BUFFER_OFFSET_HALF,
+	BUFFER_OFFSET_FULL,
+}BUFFER_StateTypeDef;
 /* Private define ------------------------------------------------------------*/
+AUDIO_ErrorTypeDef AUDIO_Start(uint32_t audio_start_address, uint32_t audio_file_size);
+#define AUDIO_NB_BLOCKS    ((uint32_t)4)
+#define AUDIO_BLOCK_SIZE   ((uint32_t)0xFFFE)
 /* Private macro -------------------------------------------------------------*/
 uint8_t PCM_BUFFER_READY = 0;
+
 /* Private variables ---------------------------------------------------------*/
 /* Define record Buf at D3SRAM @0x38000000 since the BDMA for SAI4 use only this memory */
 #if defined ( __CC_ARM )  /* !< ARM Compiler */
@@ -142,7 +158,16 @@ void  BSP_AUDIO_IN_TransferComplete_CallBack(uint32_t Instance)
     SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
 
     printf("processing 2nd half of buffer");
-    MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+
+    for (uint32_t i = 0;
+    		i < (AUDIO_IN_PDM_BUFFER_SIZE/4);
+    		i++, infPtr++)
+    {
+    	infBuff[infPtr] = RecPlayback[playbackPtr + i];
+		 if(infPtr >= MAX_FFT_SIZE)
+			infPtr = 0;
+    	PCM_BUFFER_READY = 1;
+    };
 
     playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
     if(playbackPtr >= RECORD_BUFFER_SIZE)
@@ -173,7 +198,6 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
     SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
 
     printf("processing 1st half of buffer");
-    MX_X_CUBE_AI_Process(RecPlayback[playbackPtr]);
 
     for (uint32_t i = 0;
         		i < (AUDIO_IN_PDM_BUFFER_SIZE/4);
@@ -182,7 +206,7 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
         	infBuff[infPtr] = RecPlayback[playbackPtr + i];
     		 if(infPtr >= MAX_FFT_SIZE)
     			infPtr = 0;
-        	MX_X_CUBE_AI_Process(infBuff[infPtr]);
+        	PCM_BUFFER_READY = 1;
         };
     playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
     if(playbackPtr >= RECORD_BUFFER_SIZE)
@@ -195,6 +219,21 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
     AudioBufferOffset = BUFFER_OFFSET_HALF;
   }
 
+}
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
+void Error_Handler(void)
+{
+  /* USER CODE BEGIN Error_Handler_Debug */
+  /* User can add his own implementation to report the HAL error return state */
+  __disable_irq();
+  while (1)
+  {
+  }
+  /* USER CODE END Error_Handler_Debug */
 }
 
 /**
@@ -212,7 +251,7 @@ void BSP_AUDIO_IN_Error_CallBack(uint32_t Instance)
   */
 
 // Converts PCM buffer to mel spectrogram
-void conv_to_mel_spectrogram(uint16_t *pcm_buffer, float *mel_spec_buffer)
+void conv_to_mel_spectrogram(uint16_t *pcm_buffer, float *mel_spec_buffer, uint16_t mel_spec_size)
 {
 
 	// define configuration - match trained model
@@ -225,12 +264,9 @@ void conv_to_mel_spectrogram(uint16_t *pcm_buffer, float *mel_spec_buffer)
 
 	mel_spectrogram_init(&config);
 
-	// output spectrogram buffer
-	// n_mels x n_frames
-	mel_spec_buffer[64 * 64];
 
 	// zero out mel spectrogram buffer
-	memset(mel_spec_buffer, 0, sizeof(mel_spec_buffer));
+	memset(mel_spec_buffer, 0, mel_spec_size * sizeof(mel_spec_buffer));
 
 	// call DSP pipeline for PCMBuffer -> mel_spec
 	int n_frames = calculate_mel_spectrogram((const int16_t *)pcm_buffer, RECORD_BUFFER_SIZE, mel_spec_buffer,
