@@ -199,5 +199,13 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
-
+/**
+  * @brief  This function handles DMA2 Stream6 interrupt request.
+  * @retval None
+  */
+void DMA2_Stream6_IRQHandler(void)
+{
+  /* DMA2 Stream 6 */
+  HAL_DMA_IRQHandler(haudio_out_sai.hdmatx);
+}
 /* USER CODE END 1 */

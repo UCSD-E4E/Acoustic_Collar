@@ -176,7 +176,7 @@ int main(void)
 	MicrophoneStartProcess();
 	while (1)
 	{
-		printf("Recording (AGAIN!)...\n");
+		//printf("Recording (AGAIN!)...\n");
 		if(AI_PROCESS){
 		  MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
 		}

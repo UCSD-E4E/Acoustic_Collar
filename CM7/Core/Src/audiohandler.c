@@ -33,6 +33,12 @@ BSP_AUDIO_Init_t  AudioOutInit;
 /* Pointer to record_data */
 uint32_t AudioBufferOffset;
 
+typedef enum {
+  BUFFER_OFFSET_NONE = 0,
+  BUFFER_OFFSET_HALF,
+  BUFFER_OFFSET_FULL,
+}BUFFER_StateTypeDef;
+
 void MicrophoneStartProcess()
 {
 	uint32_t channel_nbr = 2;
@@ -56,14 +62,89 @@ void MicrophoneStartProcess()
 	BSP_AUDIO_OUT_Init(0, &AudioOutInit);
 
 	BSP_AUDIO_OUT_SetDevice(0, AUDIO_OUT_DEVICE_HEADPHONE);
-	BSP_AUDIO_IN_RecordPDM(2, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE);
+	BSP_AUDIO_IN_RecordPDM(1, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE);
 
 	// TODO: remove audio playback - just for testing audio recording
 	BSP_AUDIO_OUT_Play(0, (uint8_t*)&RecPlayback, RECORD_BUFFER_SIZE);
 }
 
-void DMA2_Stream1_IRQHandler(void)
+/**
+  * @brief Calculates the remaining file size and new position of the pointer.
+  * @param  None
+  * @retval None
+  */
+void  BSP_AUDIO_IN_TransferComplete_CallBack(uint32_t Instance)
 {
-   BSP_AUDIO_OUT_IRQHandler(0);
+    if(Instance == 1U)
+  {
+    /* Invalidate Data Cache to get the updated content of the SRAM*/
+    SCB_InvalidateDCache_by_Addr((uint32_t *)&recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE/2], AUDIO_IN_PDM_BUFFER_SIZE*2);
+
+    BSP_AUDIO_IN_PDMToPCM(Instance, (uint16_t*)&recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE/2], &RecPlayback[playbackPtr]);
+
+    /* Clean Data Cache to update the content of the SRAM */
+    SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
+
+    // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
+    printf("processing 2nd half of buffer");
+    MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+
+    playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
+    if(playbackPtr >= RECORD_BUFFER_SIZE)
+      playbackPtr = 0;
+  }
+  else
+  {
+    AudioBufferOffset = BUFFER_OFFSET_FULL;
+  }
+
 }
+
+/**
+  * @brief  Manages the DMA Half Transfer complete interrupt.
+  * @param  None
+  * @retval None
+  */
+void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
+{
+    if(Instance == 1U)
+  {
+    /* Invalidate Data Cache to get the updated content of the SRAM*/
+    SCB_InvalidateDCache_by_Addr((uint32_t *)&recordPDMBuf[0], AUDIO_IN_PDM_BUFFER_SIZE*2);
+
+    BSP_AUDIO_IN_PDMToPCM(Instance, (uint16_t*)&recordPDMBuf[0], &RecPlayback[playbackPtr]);
+
+    /* Clean Data Cache to update the content of the SRAM */
+    SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
+
+    // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
+    printf("processing 1st half of buffer");
+    MX_X_CUBE_AI_Process(RecPlayback[playbackPtr]);
+
+    playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
+    if(playbackPtr >= RECORD_BUFFER_SIZE)
+    {
+      playbackPtr = 0;
+    }
+  }
+  else
+  {
+    AudioBufferOffset = BUFFER_OFFSET_HALF;
+  }
+
+}
+
+/**
+  * @brief  Audio IN Error callback function
+  * @param  None
+  * @retval None
+  */
+void BSP_AUDIO_IN_Error_CallBack(uint32_t Instance)
+{
+  /* Stop the program with an infinite loop */
+  Error_Handler();
+}
+/**
+  * @}
+  */
 

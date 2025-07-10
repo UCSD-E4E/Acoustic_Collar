@@ -15,6 +15,7 @@ extern "C" {
 #include "stm32h7xx_hal.h"
 #include "stm32h747i_discovery_audio.h"
 #include "main.h"
+#include "app_x-cube-ai.h"
 
 void MicrophoneStartProcess();
 
