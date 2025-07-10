@@ -14,13 +14,13 @@ extern AUDIO_ErrorTypeDef AUDIO_Start(uint32_t audio_start_address, uint32_t aud
 #define AUDIO_BLOCK_SIZE   ((uint32_t)0xFFFE)
 
 #if defined ( __CC_ARM )  /* !< ARM Compiler */
-  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
+  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D1")));
 
 #elif defined ( __ICCARM__ )  /* !< ICCARM Compiler */
   #pragma location=0x38000000
 ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]);
 #elif defined ( __GNUC__ )  /* !< GNU Compiler */
-  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
+  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D1")));
 #endif
 static uint32_t AudioFreq[9] = {8000 ,11025, 16000, 22050, 32000, 44100, 48000, 96000, 192000};
 uint32_t VolumeLevel = 80;
@@ -65,7 +65,7 @@ void MicrophoneStartProcess()
 	BSP_AUDIO_IN_RecordPDM(1, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE);
 
 	// TODO: remove audio playback - just for testing audio recording
-	BSP_AUDIO_OUT_Play(0, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE);
+	BSP_AUDIO_OUT_Play(0, (uint8_t*)&RecPlayback, RECORD_BUFFER_SIZE);
 }
 
 /**
@@ -119,7 +119,7 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
 
     // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
     printf("processing 1st half of buffer");
-    MX_X_CUBE_AI_Process(RecPlayback[playbackPtr]);
+    MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
 
     playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
     if(playbackPtr >= RECORD_BUFFER_SIZE)

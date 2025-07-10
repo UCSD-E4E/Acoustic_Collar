@@ -101,12 +101,6 @@ extern uint32_t playbackPtr;
 #define FMC_NBL0_GPIO_Port GPIOE
 #define FMC_D27_Pin GPIO_PIN_3
 #define FMC_D27_GPIO_Port GPIOI
-#define SAI1_SCK_A_Pin GPIO_PIN_5
-#define SAI1_SCK_A_GPIO_Port GPIOE
-#define SAI1_FS_A_Pin GPIO_PIN_4
-#define SAI1_FS_A_GPIO_Port GPIOE
-#define SAI1_SD_B_Pin GPIO_PIN_3
-#define SAI1_SD_B_GPIO_Port GPIOE
 #define FMC_SDCAS_Pin GPIO_PIN_15
 #define FMC_SDCAS_GPIO_Port GPIOG
 #define FMC_D2_Pin GPIO_PIN_0
@@ -115,8 +109,6 @@ extern uint32_t playbackPtr;
 #define FMC_D21_GPIO_Port GPIOH
 #define FMC_D30_Pin GPIO_PIN_9
 #define FMC_D30_GPIO_Port GPIOI
-#define SAI1_SD_A_Pin GPIO_PIN_6
-#define SAI1_SD_A_GPIO_Port GPIOE
 #define FMC_D3_Pin GPIO_PIN_1
 #define FMC_D3_GPIO_Port GPIOD
 #define CEC_CK_MCO1_Pin GPIO_PIN_8
@@ -125,8 +117,6 @@ extern uint32_t playbackPtr;
 #define FMC_D31_GPIO_Port GPIOI
 #define FMC_SDCLK_Pin GPIO_PIN_8
 #define FMC_SDCLK_GPIO_Port GPIOG
-#define SAI1_MCLK_A_Pin GPIO_PIN_7
-#define SAI1_MCLK_A_GPIO_Port GPIOG
 #define FMC_A2_Pin GPIO_PIN_2
 #define FMC_A2_GPIO_Port GPIOF
 #define FMC_A1_Pin GPIO_PIN_1

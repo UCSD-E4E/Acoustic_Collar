@@ -55,7 +55,8 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern DMA_HandleTypeDef hdma_sai1_a;
+extern SAI_HandleTypeDef hsai_BlockA1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -198,14 +199,23 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32h7xx.s).                    */
 /******************************************************************************/
 
-/* USER CODE BEGIN 1 */
 /**
-  * @brief  This function handles DMA2 Stream6 interrupt request.
-  * @retval None
+  * @brief This function handles DMA2 stream1 global interrupt.
   */
-void DMA2_Stream6_IRQHandler(void)
+void DMA2_Stream1_IRQHandler(void)
 {
-  /* DMA2 Stream 6 */
-  HAL_DMA_IRQHandler(haudio_out_sai.hdmatx);
+  /* USER CODE BEGIN DMA2_Stream1_IRQn 0 */
+
+  /* USER CODE END DMA2_Stream1_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_sai1_a);
+  /* USER CODE BEGIN DMA2_Stream1_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream1_IRQn 1 */
+}
+
+/* USER CODE BEGIN 1 */
+void SAI1_IRQHandler(void)
+{
+    HAL_SAI_IRQHandler(&hsai_BlockA1);
 }
 /* USER CODE END 1 */
