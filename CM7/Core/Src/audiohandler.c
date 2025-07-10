@@ -22,8 +22,6 @@ ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]);
 #elif defined ( __GNUC__ )  /* !< GNU Compiler */
   ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D1")));
 #endif
-ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]);
-ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]);
 static uint32_t AudioFreq[9] = {8000 ,11025, 16000, 22050, 32000, 44100, 48000, 96000, 192000};
 uint32_t VolumeLevel = 80;
 uint32_t  InState = 0;
@@ -33,7 +31,6 @@ uint16_t playbackBuf[RECORD_BUFFER_SIZE*2];
 BSP_AUDIO_Init_t  AudioInInit;
 BSP_AUDIO_Init_t  AudioOutInit;
 /* Pointer to record_data */
-uint32_t playbackPtr;
 uint32_t AudioBufferOffset;
 
 void MicrophoneStartProcess()
