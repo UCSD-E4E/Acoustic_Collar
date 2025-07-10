@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "app_x-cube-ai.h"
+#include "mel_spectrogram.h"
 
 /** @addtogroup BSP_Examples
   * @{
@@ -55,6 +56,8 @@ uint32_t  InState = 0;
 uint32_t  OutState = 0;
 uint32_t *AudioFreq_ptr;
 uint16_t playbackBuf[RECORD_BUFFER_SIZE*2];
+uint32_t infPtr = 0;
+uint16_t infBuff[MAX_FFT_SIZE];
 BSP_AUDIO_Init_t  AudioInInit;
 BSP_AUDIO_Init_t  AudioOutInit;
 /* Pointer to record_data */
@@ -152,7 +155,16 @@ void  BSP_AUDIO_IN_TransferComplete_CallBack(uint32_t Instance)
 
     // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
     printf("processing 2nd half of buffer");
-    MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+//    MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+    for (uint32_t i = 0;
+    		i < (AUDIO_IN_PDM_BUFFER_SIZE/4);
+    		i++, infPtr++)
+    {
+    	infBuff[infPtr] = RecPlayback[playbackPtr + i];
+		 if(infPtr >= MAX_FFT_SIZE)
+			infPtr = 0;
+    	MX_X_CUBE_AI_Process(infBuff[infPtr]);
+    };
 
     playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
     if(playbackPtr >= RECORD_BUFFER_SIZE)
@@ -184,8 +196,17 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
 
     // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
     printf("processing 1st half of buffer");
-    MX_X_CUBE_AI_Process(RecPlayback[playbackPtr]);
+//    MX_X_CUBE_AI_Process(RecPlayback[playbackPtr]);
 
+    for (uint32_t i = 0;
+        		i < (AUDIO_IN_PDM_BUFFER_SIZE/4);
+        		i++, infPtr++)
+        {
+        	infBuff[infPtr] = RecPlayback[playbackPtr + i];
+    		 if(infPtr >= MAX_FFT_SIZE)
+    			infPtr = 0;
+        	MX_X_CUBE_AI_Process(infBuff[infPtr]);
+        };
     playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
     if(playbackPtr >= RECORD_BUFFER_SIZE)
     {
