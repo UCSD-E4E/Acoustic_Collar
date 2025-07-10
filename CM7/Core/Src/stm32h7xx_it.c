@@ -199,6 +199,17 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32h7xx.s).                    */
 /******************************************************************************/
 
+
+/**
+  * @brief  This function handles BDMA Channel 1 for SAI_PDM interrupt request.
+  * @param  None
+  * @retval None
+  */
+void AUDIO_IN_SAI_PDMx_DMAx_IRQHandler(void)
+{
+  BSP_AUDIO_IN_IRQHandler(1, AUDIO_IN_DEVICE_DIGITAL_MIC);
+}
+
 /**
   * @brief This function handles DMA2 stream1 global interrupt.
   */
