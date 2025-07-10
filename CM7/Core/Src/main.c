@@ -60,7 +60,6 @@ UART_HandleTypeDef huart1;
 SDRAM_HandleTypeDef hsdram1;
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -159,7 +158,8 @@ Error_Handler();
   MX_FMC_Init();
   MX_X_CUBE_AI_Init();
   /* USER CODE BEGIN 2 */
-
+  // Initialize mel spectrogram configuration
+  float mel_spec_buffer[64 * 64]; // 64 mel bands, 64 time frames
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -167,12 +167,18 @@ Error_Handler();
   while (1)
   {
     /* USER CODE END WHILE */
+	if(PCM_BUFFER_READY){
+		//conver PCM to spectrogram and infer species with AI model
+		conv_to_mel_spectrogram((uint16_t *)recordPDMBuf, mel_spec_buffer);
+		MX_X_CUBE_AI_Process(mel_spec_buffer);
+		PCM_BUFFER_READY = 0; //reset flag
+	}
 
-  //MX_X_CUBE_AI_Process();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
+
 
 /**
   * @brief System Clock Configuration

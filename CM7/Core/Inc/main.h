@@ -30,8 +30,8 @@ extern "C" {
 #include <stdio.h>
 
 #include "stm32h7xx_hal.h"
-#include "stm32h747i_discovery_audio.h"
 #include "stm32h747i_discovery_bus.h"
+#include "audio_record.h"
 
 // Not sure if I need these libs
 //#include "stm32h747i_discovery_qspi.h"
@@ -40,7 +40,6 @@ extern "C" {
 //#include "stm32h747i_discovery_ts.h"
 
 #define BUFFER_SIZE 4096
-#define RECORD_BUFFER_SIZE 4096 // Size of the audio buffer
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -48,13 +47,6 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-  typedef enum
-  {
-      AUDIO_ERROR_NONE = 0,
-      AUDIO_ERROR_NOTREADY,
-      AUDIO_ERROR_IO,
-      AUDIO_ERROR_EOF,
-  } AUDIO_ErrorTypeDef;
 
 /* USER CODE END ET */
 
@@ -72,7 +64,6 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -216,7 +207,6 @@ void Error_Handler(void);
 #define FMC_D13_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
-
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

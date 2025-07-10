@@ -197,38 +197,12 @@ static int ai_run(void)
 // extern float mel_spec_buffer[64 * 258];
 
 /* USER CODE BEGIN 2 */
-int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
+int acquire_and_process_data(ai_i8* data[], float* mel_spec_buffer)
 {
-
-  // TODO: move spectrogram conversion to a different place
-
-  // define configuration - match trained model
-    MelSpectrogramConfig_t config = {.fft_size = 512,
-                                     .hop_length = 256,
-                                     .n_mels = 64,
-                                     .sample_rate = 16000.0f,
-                                     .f_min = 0.0f,
-                                     .f_max = 8000.0f};
-
-    mel_spectrogram_init(&config);
-
-    // output spectrogram buffer
-    // n_mels x n_frames
-    static float mel_spec[64 * 64];
-    // zero out mel spectrogram buffer
-    memset(mel_spec, 0, sizeof(mel_spec));
-
-    // call DSP pipeline for PCMBuffer -> mel_spec
-    int n_frames = calculate_mel_spectrogram((const int16_t *)pcm_buffer, RECORD_BUFFER_SIZE, mel_spec,
-                                             64); // max columns
-
-    // normalize to [0, 1]
-    normalize_spectrogram(mel_spec, config.n_mels, n_frames);
-
     float *dst = (float *)data[0];
 
     for (int i = 0; i < AI_TINYCNNBUOW_IN_1_SIZE; ++i) {
-        dst[i] = mel_spec[i];  // 64 * 258 = 16512
+        dst[i] = mel_spec_buffer[i];  // 64 * 258 = 16512 <- CHANGE?
     }
 
     return 0;
@@ -290,7 +264,7 @@ void MX_X_CUBE_AI_Init(void)
     /* USER CODE END 5 */
 }
 
-void MX_X_CUBE_AI_Process(uint16_t *pcm_buffer)
+void MX_X_CUBE_AI_Process(float *mel_spec_buffer)
 {
     /* USER CODE BEGIN 6 */
   int res = -1;
@@ -299,7 +273,7 @@ void MX_X_CUBE_AI_Process(uint16_t *pcm_buffer)
 
     do {
       /* 1 - acquire and pre-process input data */
-      res = acquire_and_process_data(data_ins, pcm_buffer);
+      res = acquire_and_process_data(data_ins, mel_spec_buffer);
       /* 2 - process the data - call inference engine */
       if (res == 0)
         res = ai_run();

@@ -141,3 +141,4 @@ void normalize_spectrogram(float *spectrogram, uint16_t n_mels, uint16_t n_frame
         spectrogram[i] = (spectrogram[i] - min) / range;
     }
 }
+
