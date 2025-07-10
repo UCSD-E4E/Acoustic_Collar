@@ -158,7 +158,8 @@ void  BSP_AUDIO_IN_TransferComplete_CallBack(uint32_t Instance)
     SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
 
     printf("processing 2nd half of buffer");
-
+//    MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+    //mel_spec window for audio chunks
     for (uint32_t i = 0;
     		i < (AUDIO_IN_PDM_BUFFER_SIZE/4);
     		i++, infPtr++)
@@ -198,6 +199,7 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
     SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
 
     printf("processing 1st half of buffer");
+//    MX_X_CUBE_AI_Process(RecPlayback[playbackPtr]);
 
     for (uint32_t i = 0;
         		i < (AUDIO_IN_PDM_BUFFER_SIZE/4);
