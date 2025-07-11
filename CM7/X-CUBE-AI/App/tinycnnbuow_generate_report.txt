@@ -1,30 +1,30 @@
 ST Edge AI Core v2.1.0-20194 329b0e98d
-Created date          : 2025-07-10 10:23:32
-Parameters            : generate --target stm32h7 --name tinycnnbuow -m C:/Users/milov/Documents/Work/Research/E4E/buow_tinycnn.tflite --compression none --verbosity 1 --workspace C:/Users/milov/AppData/Local/Temp/mxAI_workspace36902216624007598672963715706289 --output C:/Users/milov/.stm32cubemx/tinycnnbuow_output
+Created date          : 2025-07-10 17:25:59
+Parameters            : generate --target stm32h7 --name tinycnnbuow -m C:/Users/milov/Documents/Work/Research/E4E/buow_tinycnn.tflite --compression none --verbosity 1 --workspace C:/Users/milov/AppData/Local/Temp/mxAI_workspace2903876202970014716127137947589453 --output C:/Users/milov/.stm32cubemx/tinycnnbuow_output
 
 Exec/report summary (generate)
-----------------------------------------------------------------------------------------------------------
-model file         :   C:\Users\milov\Documents\Work\Research\E4E\buow_tinycnn.tflite                     
-type               :   tflite                                                                             
-c_name             :   tinycnnbuow                                                                        
-compression        :   none                                                                               
-options            :   allocate-inputs, allocate-outputs                                                  
-optimization       :   balanced                                                                           
-target/series      :   stm32h7                                                                            
-workspace dir      :   C:\Users\milov\AppData\Local\Temp\mxAI_workspace36902216624007598672963715706289   
-output dir         :   C:\Users\milov\.stm32cubemx\tinycnnbuow_output                                     
-model_fmt          :   float                                                                              
-model_name         :   buow_tinycnn                                                                       
-model_hash         :   0x8a2c598bd3a777908b7a16db1ca4fb77                                                 
-params #           :   6,086 items (6.90 KiB)                                                             
-----------------------------------------------------------------------------------------------------------
-input 1/1          :   'serving_default_input0', f32(1x1x64x258), 64.50 KBytes, activations               
-output 1/1         :   'gemm_16', f32(1x6), 24 Bytes, activations                                         
-macc               :   11,209,786                                                                         
-weights (ro)       :   24,352 B (23.78 KiB) (1 segment) / +8(+0.0%) vs float model                        
-activations (rw)   :   285,056 B (278.38 KiB) (1 segment) *                                               
-ram (total)        :   285,056 B (278.38 KiB) = 285,056 + 0 + 0                                           
-----------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
+model file         :   C:\Users\milov\Documents\Work\Research\E4E\buow_tinycnn.tflite                       
+type               :   tflite                                                                               
+c_name             :   tinycnnbuow                                                                          
+compression        :   none                                                                                 
+options            :   allocate-inputs, allocate-outputs                                                    
+optimization       :   balanced                                                                             
+target/series      :   stm32h7                                                                              
+workspace dir      :   C:\Users\milov\AppData\Local\Temp\mxAI_workspace2903876202970014716127137947589453   
+output dir         :   C:\Users\milov\.stm32cubemx\tinycnnbuow_output                                       
+model_fmt          :   float                                                                                
+model_name         :   buow_tinycnn                                                                         
+model_hash         :   0x8a2c598bd3a777908b7a16db1ca4fb77                                                   
+params #           :   6,086 items (6.90 KiB)                                                               
+------------------------------------------------------------------------------------------------------------
+input 1/1          :   'serving_default_input0', f32(1x1x64x258), 64.50 KBytes, activations                 
+output 1/1         :   'gemm_16', f32(1x6), 24 Bytes, activations                                           
+macc               :   11,209,786                                                                           
+weights (ro)       :   24,352 B (23.78 KiB) (1 segment) / +8(+0.0%) vs float model                          
+activations (rw)   :   285,056 B (278.38 KiB) (1 segment) *                                                 
+ram (total)        :   285,056 B (278.38 KiB) = 285,056 + 0 + 0                                             
+------------------------------------------------------------------------------------------------------------
 (*) 'input'/'output' buffers can be used from the activations buffer
 
 Model name - buow_tinycnn
