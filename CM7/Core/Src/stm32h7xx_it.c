@@ -199,5 +199,9 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
+void AUDIO_IN_SAI_PDMx_DMAx_IRQHandler(void)
+{
+  BSP_AUDIO_IN_IRQHandler(1, AUDIO_IN_DEVICE_DIGITAL_MIC);
+}
 
 /* USER CODE END 1 */

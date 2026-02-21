@@ -76,8 +76,8 @@ static void MX_LTDC_Init(void);
 static void MX_FMC_Init(void);
 /* USER CODE BEGIN PFP */
 uint8_t AI_PROCESS = 0; //flag to signal AI processing
-ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]);
-ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]);
+ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
+ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
 uint32_t playbackPtr;
 /* USER CODE END PFP */
 
@@ -174,7 +174,7 @@ int main(void)
 	MicrophoneStartProcess();
 	while (1)
 	{
-		printf("Recording (AGAIN!)...\n");
+//		printf("Recording (AGAIN!)...\n");
 		if(AI_PROCESS){
 		  MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
 		}
@@ -259,7 +259,7 @@ void PeriphCommonClock_Config(void)
 
   /** Initializes the peripherals clock
   */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_SAI1
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_SAI1|RCC_PERIPHCLK_SAI4A
                               |RCC_PERIPHCLK_LTDC;
   PeriphClkInitStruct.PLL2.PLL2M = 2;
   PeriphClkInitStruct.PLL2.PLL2N = 24;
@@ -278,6 +278,7 @@ void PeriphCommonClock_Config(void)
   PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOMEDIUM;
   PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
   PeriphClkInitStruct.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL2;
+  PeriphClkInitStruct.Sai4AClockSelection = RCC_SAI4ACLKSOURCE_PLL2;
   PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLL3;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
   {

@@ -166,6 +166,15 @@ SECTIONS
     __bss_end__ = _ebss;
   } >RAM_D1
 
+  /* D3 SRAM section for BDMA-accessible buffers */
+  .RAM_D3 (NOLOAD) :
+  {
+    . = ALIGN(4);
+    *(.RAM_D3)
+    *(.RAM_D3*)
+    . = ALIGN(4);
+  } >RAM_D3
+
   /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */
   ._user_heap_stack :
   {
