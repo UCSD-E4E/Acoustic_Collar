@@ -109,22 +109,22 @@ void MicrophoneStartProcess()
 //	uint32_t timeout_ms = 1000; // 1 second timeout
 	
 	// Call the DMA receive with explicit timeout check
-	HAL_StatusTypeDef hal_ret = HAL_SAI_Receive_DMA(&haudio_in_sai, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE / 2);
-	printf("DEBUG: HAL_SAI_Receive_DMA returned HAL status: %d\n", hal_ret);
+	// HAL_StatusTypeDef hal_ret = HAL_SAI_Receive_DMA(&haudio_in_sai, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE / 2);
+	// printf("DEBUG: HAL_SAI_Receive_DMA returned HAL status: %d\n", hal_ret);
 
-	if(hal_ret != HAL_OK) {
-		printf("DEBUG: ERROR! HAL_SAI_Receive_DMA failed with status: %d\n", hal_ret);
-		printf("DEBUG: SAI State after failure: %d\n", haudio_in_sai.State);
-		if(haudio_in_sai.ErrorCode != 0) {
-			printf("DEBUG: SAI Error Code: 0x%lx\n", haudio_in_sai.ErrorCode);
-		}
-		ret = BSP_ERROR_PERIPH_FAILURE;
-	} else {
-		printf("DEBUG: HAL_SAI_Receive_DMA SUCCEEDED!\n");
-		ret = BSP_ERROR_NONE;
-	}
+	// if(hal_ret != HAL_OK) {
+	// 	printf("DEBUG: ERROR! HAL_SAI_Receive_DMA failed with status: %d\n", hal_ret);
+	// 	printf("DEBUG: SAI State after failure: %d\n", haudio_in_sai.State);
+	// 	if(haudio_in_sai.ErrorCode != 0) {
+	// 		printf("DEBUG: SAI Error Code: 0x%lx\n", haudio_in_sai.ErrorCode);
+	// 	}
+	// 	ret = BSP_ERROR_PERIPH_FAILURE;
+	// } else {
+	// 	printf("DEBUG: HAL_SAI_Receive_DMA SUCCEEDED!\n");
+	// 	ret = BSP_ERROR_NONE;
+	// }
 
-//	BSP_AUDIO_IN_RecordPDM(1, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE/2);
+	BSP_AUDIO_IN_RecordPDM(1, (uint8_t*)&recordPDMBuf, sizeof(recordPDMBuf));
 
 	// TODO: remove audio playback - just for testing audio recording
 //	printf("DEBUG: About to call BSP_AUDIO_OUT_Play\n");

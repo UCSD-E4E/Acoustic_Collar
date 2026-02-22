@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#define MAX_FFT_SIZE 258 //2048
+#define MAX_FFT_SIZE 512 //2048
 #define MAX_MEL_BANDS 64 //128
 
 typedef struct

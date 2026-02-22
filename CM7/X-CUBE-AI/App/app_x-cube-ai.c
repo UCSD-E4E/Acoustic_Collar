@@ -188,15 +188,13 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
 
     mel_spectrogram_init(&config);
 
-    // output spectrogram buffer
-    // n_mels x n_frames
-    static float mel_spec[64 * 64];
-    // zero out mel spectrogram buffer
+    // output spectrogram buffer (n_mels x model time frames)
+    static float mel_spec[AI_TINYCNNBUOW_IN_1_SIZE];
     memset(mel_spec, 0, sizeof(mel_spec));
 
     // call DSP pipeline for PCMBuffer -> mel_spec
     int n_frames = calculate_mel_spectrogram((const int16_t *)pcm_buffer, RECORD_BUFFER_SIZE, mel_spec,
-                                             64); // max columns
+                         AI_TINYCNNBUOW_IN_1_CHANNEL);
 
     // normalize to [0, 1]
     normalize_spectrogram(mel_spec, config.n_mels, n_frames);
@@ -204,7 +202,7 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
     float *dst = (float *)data[0];
 
     for (int i = 0; i < AI_TINYCNNBUOW_IN_1_SIZE; ++i) {
-        dst[i] = mel_spec[i];  // 64 * 258 = 16512
+      dst[i] = mel_spec[i];
     }
 
     return 0;
