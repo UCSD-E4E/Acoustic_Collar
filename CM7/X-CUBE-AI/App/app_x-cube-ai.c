@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -60,7 +60,6 @@
 #include "mel_spec_buffer.h"
 #include "mel_spectrogram.h"
 #include "mel_filterbank.h"
-
 
 /* USER CODE BEGIN includes */
 /* USER CODE END includes */
@@ -172,6 +171,7 @@ static int ai_run(void)
 
   return 0;
 }
+
 /* USER CODE BEGIN 2 */
 int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
 {
@@ -181,16 +181,16 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
   // define configuration - match trained model
     MelSpectrogramConfig_t config = {.fft_size = 512,
                                      .hop_length = 256,
-                                     .n_mels = 64,
+                                     .n_mels = 128,
                                      .sample_rate = 16000.0f,
                                      .f_min = 0.0f,
                                      .f_max = 8000.0f};
 
     mel_spectrogram_init(&config);
 
-    // output spectrogram buffer (n_mels x model time frames)
-    static float mel_spec[AI_TINYCNNBUOW_IN_1_SIZE];
-    memset(mel_spec, 0, sizeof(mel_spec));
+    // compute spectrogram directly into the model input buffer (inside pool0)
+    float *mel_spec = (float *)data[0];
+    memset(mel_spec, 0, AI_TINYCNNBUOW_IN_1_SIZE_BYTES);
 
     // call DSP pipeline for PCMBuffer -> mel_spec
     int n_frames = calculate_mel_spectrogram((const int16_t *)pcm_buffer, RECORD_BUFFER_SIZE, mel_spec,
@@ -198,12 +198,6 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
 
     // normalize to [0, 1]
     normalize_spectrogram(mel_spec, config.n_mels, n_frames);
-
-    float *dst = (float *)data[0];
-
-    for (int i = 0; i < AI_TINYCNNBUOW_IN_1_SIZE; ++i) {
-      dst[i] = mel_spec[i];
-    }
 
     return 0;
 }
@@ -264,7 +258,7 @@ void MX_X_CUBE_AI_Init(void)
     /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN 6 */
+    /* USER CODE BEGIN 6 */
 void MX_X_CUBE_AI_Process(uint16_t *pcm_buffer)
 {
 
@@ -291,7 +285,8 @@ void MX_X_CUBE_AI_Process(uint16_t *pcm_buffer)
     ai_log_err(err, "Process has FAILED");
   }
 }
-/* USER CODE END 6 */
+    /* USER CODE END 6 */
+
 #ifdef __cplusplus
-}
+
 #endif

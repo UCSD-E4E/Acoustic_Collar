@@ -3,12 +3,12 @@
   ******************************************************************************
   * @file    tinycnnbuow_config.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    2025-07-07T14:53:22-0700
+  * @date    2026-02-22T15:22:11-0800
   * @brief   AI Tool Automatic Code Generator for Custom Layers Implementation
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file

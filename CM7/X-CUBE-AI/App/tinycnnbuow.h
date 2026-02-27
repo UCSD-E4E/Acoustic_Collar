@@ -2,12 +2,12 @@
   ******************************************************************************
   * @file    tinycnnbuow.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    2025-07-07T14:53:22-0700
+  * @date    2026-02-22T15:22:11-0800
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -23,7 +23,7 @@
 
 /******************************************************************************/
 #define AI_TINYCNNBUOW_MODEL_NAME          "tinycnnbuow"
-#define AI_TINYCNNBUOW_ORIGIN_MODEL_NAME   "buow_tinycnn"
+#define AI_TINYCNNBUOW_ORIGIN_MODEL_NAME   "buow_model_int8"
 
 /******************************************************************************/
 #define AI_TINYCNNBUOW_ACTIVATIONS_ALIGNMENT   (4)
@@ -44,11 +44,11 @@ AI_DEPRECATED
   AI_TINYCNNBUOW_IN_1_SIZE_BYTES, \
 }
 #define AI_TINYCNNBUOW_IN_1_FORMAT      (AI_BUFFER_FORMAT_FLOAT)
-#define AI_TINYCNNBUOW_IN_1_HEIGHT      (1)
-#define AI_TINYCNNBUOW_IN_1_WIDTH       (64)
-#define AI_TINYCNNBUOW_IN_1_CHANNEL     (258)
-#define AI_TINYCNNBUOW_IN_1_SIZE        (16512)
-#define AI_TINYCNNBUOW_IN_1_SIZE_BYTES  (66048)
+#define AI_TINYCNNBUOW_IN_1_HEIGHT      (3)
+#define AI_TINYCNNBUOW_IN_1_WIDTH       (128)
+#define AI_TINYCNNBUOW_IN_1_CHANNEL     (241)
+#define AI_TINYCNNBUOW_IN_1_SIZE        (92544)
+#define AI_TINYCNNBUOW_IN_1_SIZE_BYTES  (370176)
 
 /******************************************************************************/
 #define AI_TINYCNNBUOW_OUT_NUM       (1)
@@ -69,7 +69,7 @@ AI_DEPRECATED
 #define AI_TINYCNNBUOW_OUT_1_SIZE_BYTES  (24)
 
 /******************************************************************************/
-#define AI_TINYCNNBUOW_N_NODES (17)
+#define AI_TINYCNNBUOW_N_NODES (22)
 
 
 AI_API_DECLARE_BEGIN

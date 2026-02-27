@@ -2,12 +2,12 @@
   ******************************************************************************
   * @file    tinycnnbuow_data.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    2025-07-07T14:53:22-0700
+  * @date    2026-02-22T15:22:11-0800
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -21,13 +21,13 @@
 AI_API_DECLARE_BEGIN
 ai_buffer g_tinycnnbuow_data_map_activations[AI_TINYCNNBUOW_DATA_ACTIVATIONS_COUNT] = {
   AI_BUFFER_INIT(AI_FLAG_NONE,  AI_BUFFER_FORMAT_U8,
-    AI_BUFFER_SHAPE_INIT(AI_SHAPE_BCWH, 4, 1, 285056, 1, 1),
-    285056, NULL, NULL),    /* heap_overlay_pool */
+    AI_BUFFER_SHAPE_INIT(AI_SHAPE_BCWH, 4, 1, 370176, 1, 1),
+    370176, NULL, NULL),    /* heap_overlay_pool */
   };
 ai_buffer g_tinycnnbuow_data_map_weights[AI_TINYCNNBUOW_DATA_WEIGHTS_COUNT] = {
   AI_BUFFER_INIT(AI_FLAG_NONE,  AI_BUFFER_FORMAT_U8,
-    AI_BUFFER_SHAPE_INIT(AI_SHAPE_BCWH, 4, 1, 24352, 1, 1),
-    24352, NULL, s_tinycnnbuow_weights_array_u64),   /* weights_array */
+    AI_BUFFER_SHAPE_INIT(AI_SHAPE_BCWH, 4, 1, 15100, 1, 1),
+    15100, NULL, s_tinycnnbuow_weights_array_u64),   /* weights_array */
   };
 
 

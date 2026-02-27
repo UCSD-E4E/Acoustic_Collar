@@ -2,10 +2,10 @@
   ******************************************************************************
   * @file    tinycnnbuow_data_params.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    2025-07-07T14:53:22-0700
+  * @date    2026-02-22T15:22:11-0800
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -28,18 +28,18 @@
 
 
 #define AI_TINYCNNBUOW_DATA_ACTIVATIONS_SIZES \
-  { 285056, }
-#define AI_TINYCNNBUOW_DATA_ACTIVATIONS_SIZE     (285056)
+  { 370176, }
+#define AI_TINYCNNBUOW_DATA_ACTIVATIONS_SIZE     (370176)
 #define AI_TINYCNNBUOW_DATA_ACTIVATIONS_COUNT    (1)
-#define AI_TINYCNNBUOW_DATA_ACTIVATION_1_SIZE    (285056)
+#define AI_TINYCNNBUOW_DATA_ACTIVATION_1_SIZE    (370176)
 
 
 
 #define AI_TINYCNNBUOW_DATA_WEIGHTS_SIZES \
-  { 24352, }
-#define AI_TINYCNNBUOW_DATA_WEIGHTS_SIZE         (24352)
+  { 15100, }
+#define AI_TINYCNNBUOW_DATA_WEIGHTS_SIZE         (15100)
 #define AI_TINYCNNBUOW_DATA_WEIGHTS_COUNT        (1)
-#define AI_TINYCNNBUOW_DATA_WEIGHT_1_SIZE        (24352)
+#define AI_TINYCNNBUOW_DATA_WEIGHT_1_SIZE        (15100)
 
 
 
