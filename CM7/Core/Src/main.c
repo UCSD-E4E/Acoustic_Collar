@@ -165,7 +165,8 @@ int main(void)
   MX_FMC_Init();
   MX_X_CUBE_AI_Init();
   /* USER CODE BEGIN 2 */
-
+  // MX_X_CUBE_AI_TestInference();
+  MX_X_CUBE_AI_TestMelSpec();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -174,9 +175,9 @@ int main(void)
 	while (1)
 	{
 //		printf("Recording (AGAIN!)...\n");
-		if(AI_PROCESS){
-		  MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
-		}
+//		if(AI_PROCESS){
+//		  MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+//		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -179,12 +179,12 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
   // TODO: move spectrogram conversion to a different place
 
   // define configuration - match trained model
-    MelSpectrogramConfig_t config = {.fft_size = 512,
-                                     .hop_length = 256,
+    MelSpectrogramConfig_t config = {.fft_size = 400,
+                                     .hop_length = 200,
                                      .n_mels = 128,
                                      .sample_rate = 16000.0f,
                                      .f_min = 0.0f,
-                                     .f_max = 8000.0f};
+                                     .f_max = 50000.0f};
 
     mel_spectrogram_init(&config);
 
@@ -259,6 +259,73 @@ void MX_X_CUBE_AI_Init(void)
 }
 
     /* USER CODE BEGIN 6 */
+void MX_X_CUBE_AI_TestInference(void)
+{
+  if (!tinycnnbuow) {
+    printf("ERROR: model not initialized\r\n");
+    return;
+  }
+
+  /* Load pre-computed mel spectrogram from FLASH into the model input buffer */
+  #include "test_melspec.h"
+
+  float *dst = (float *)data_ins[0];
+  memcpy(dst, test_melspec, AI_TINYCNNBUOW_IN_1_SIZE * sizeof(float));
+
+  printf("\r\n--- Test Inference (pre-computed mel spec) ---\r\n");
+
+  if (ai_run() == 0) {
+    post_process(data_outs);
+  } else {
+    printf("ERROR: ai_run failed\r\n");
+  }
+
+  printf("--- End Test Inference ---\r\n");
+}
+
+void MX_X_CUBE_AI_TestMelSpec(void)
+{
+  if (!tinycnnbuow) {
+    printf("ERROR: model not initialized\r\n");
+    return;
+  }
+
+  #include "test_pcm.h"
+
+  /* Same config as acquire_and_process_data */
+  MelSpectrogramConfig_t config = {
+    .fft_size = 512,
+    .hop_length = 256,
+    .n_mels = 128,
+    .sample_rate = 16000.0f,
+    .f_min = 0.0f,
+    .f_max = 8000.0f
+  };
+  mel_spectrogram_init(&config);
+
+  /* Compute mel spectrogram into model input buffer (inside pool0) */
+  float *mel_spec = (float *)data_ins[0];
+  memset(mel_spec, 0, AI_TINYCNNBUOW_IN_1_SIZE_BYTES);
+
+  int n_frames = calculate_mel_spectrogram(
+      test_pcm, TEST_PCM_SIZE, mel_spec, AI_TINYCNNBUOW_IN_1_CHANNEL);
+
+  normalize_spectrogram(mel_spec, config.n_mels, n_frames);
+
+  printf("\r\n--- Test Mel Spectrogram ---\r\n");
+  printf("PCM samples: %d (%.3fs at 16kHz)\r\n", TEST_PCM_SIZE, TEST_PCM_SIZE / 16000.0f);
+  printf("Frames computed: %d\r\n", n_frames);
+  printf("First 4 values: %.6f %.6f %.6f %.6f\r\n",
+      mel_spec[0], mel_spec[1], mel_spec[2], mel_spec[3]);
+  printf("Buffer addr: 0x%08lX  Size: %d floats (%d bytes)\r\n",
+      (unsigned long)mel_spec, config.n_mels * n_frames,
+      config.n_mels * n_frames * (int)sizeof(float));
+  printf("Export via Memory Browser, then resume.\r\n");
+  printf("--- Halting (breakpoint) ---\r\n");
+
+  __BKPT(0);  /* Halts here — export data_ins[0] via Memory Browser */
+}
+
 void MX_X_CUBE_AI_Process(uint16_t *pcm_buffer)
 {
 
