@@ -179,12 +179,12 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
   // TODO: move spectrogram conversion to a different place
 
   // define configuration - match trained model
-    MelSpectrogramConfig_t config = {.fft_size = 400,
-                                     .hop_length = 200,
+    MelSpectrogramConfig_t config = {.fft_size = 512,
+                                     .hop_length = 256,
                                      .n_mels = 128,
                                      .sample_rate = 16000.0f,
                                      .f_min = 0.0f,
-                                     .f_max = 50000.0f};
+                                     .f_max = 8000.0f};
 
     mel_spectrogram_init(&config);
 
