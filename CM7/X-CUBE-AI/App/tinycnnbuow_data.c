@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    tinycnnbuow_data.c
   * @author  AST Embedded Analytics Research Platform
-  * @date    2026-02-22T15:22:11-0800
+  * @date    2026-03-12T19:02:05-0700
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
   * @attention
@@ -21,8 +21,8 @@
 AI_API_DECLARE_BEGIN
 ai_buffer g_tinycnnbuow_data_map_activations[AI_TINYCNNBUOW_DATA_ACTIVATIONS_COUNT] = {
   AI_BUFFER_INIT(AI_FLAG_NONE,  AI_BUFFER_FORMAT_U8,
-    AI_BUFFER_SHAPE_INIT(AI_SHAPE_BCWH, 4, 1, 370176, 1, 1),
-    370176, NULL, NULL),    /* heap_overlay_pool */
+    AI_BUFFER_SHAPE_INIT(AI_SHAPE_BCWH, 4, 1, 288768, 1, 1),
+    288768, NULL, NULL),    /* heap_overlay_pool */
   };
 ai_buffer g_tinycnnbuow_data_map_weights[AI_TINYCNNBUOW_DATA_WEIGHTS_COUNT] = {
   AI_BUFFER_INIT(AI_FLAG_NONE,  AI_BUFFER_FORMAT_U8,
