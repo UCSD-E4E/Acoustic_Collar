@@ -166,6 +166,15 @@ SECTIONS
     __bss_end__ = _ebss;
   } >RAM_D1
 
+  /* D2 SRAM section for large buffers (288KB available) */
+  .RAM_D2 (NOLOAD) :
+  {
+    . = ALIGN(4);
+    *(.RAM_D2)
+    *(.RAM_D2*)
+    . = ALIGN(4);
+  } >RAM_D2
+
   /* D3 SRAM section for BDMA-accessible buffers */
   .RAM_D3 (NOLOAD) :
   {

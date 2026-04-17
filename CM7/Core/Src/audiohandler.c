@@ -39,6 +39,12 @@ BSP_AUDIO_Init_t  AudioOutInit;
 /* Pointer to record_data */
 uint32_t AudioBufferOffset;
 
+/* 3-second PCM accumulation buffer for AI inference (96KB → RAM_D2) */
+int16_t  ai_pcm_buffer[AI_PCM_BUFFER_SIZE] __attribute__((section(".RAM_D2")));
+volatile uint32_t ai_pcm_write_ptr = 0;
+volatile uint8_t  ai_buffer_ready = 0;
+volatile uint8_t  ai_recording_enabled = 0;  /* set by main loop on START command */
+
 void MicrophoneStartProcess()
 {
 	uint32_t channel_nbr = 2;
@@ -100,16 +106,22 @@ void  BSP_AUDIO_IN_TransferComplete_CallBack(uint32_t Instance)
     /* Clean Data Cache to update the content of the SRAM */
     SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
 
-    // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
-//    printf("processing 2nd half of buffer");
-    AI_PROCESS = 1; //signal AI processing
-    //MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+    /* Accumulate PCM into 3-second AI buffer */
+    uint32_t chunk_samples = AUDIO_IN_PDM_BUFFER_SIZE / 4 / 2;
+    if (ai_recording_enabled && !ai_buffer_ready && ai_pcm_write_ptr + chunk_samples <= AI_PCM_BUFFER_SIZE) {
+      memcpy(&ai_pcm_buffer[ai_pcm_write_ptr],
+             &RecPlayback[playbackPtr],
+             chunk_samples * sizeof(int16_t));
+      ai_pcm_write_ptr += chunk_samples;
+      if (ai_pcm_write_ptr >= AI_PCM_BUFFER_SIZE) {
+        ai_buffer_ready = 1;  /* signal main loop: 3s of audio ready */
+      }
+    }
 
-    playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
+    playbackPtr += chunk_samples;
     if(playbackPtr >= RECORD_BUFFER_SIZE)
     {
       playbackPtr = 0;
-      // RecPlayback is full - copy to PlaybackBuffer so OUT DMA plays the latest recording
       memcpy(PlaybackBuffer, RecPlayback, RECORD_BUFFER_SIZE * sizeof(uint16_t));
       SCB_CleanDCache_by_Addr((uint32_t*)PlaybackBuffer, RECORD_BUFFER_SIZE * sizeof(uint16_t));
     }
@@ -139,16 +151,22 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
     /* Clean Data Cache to update the content of the SRAM */
     SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
 
-    // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
-//    printf("processing 1st half of buffer");
-    AI_PROCESS = 1; //signal AI processing
-    //MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+    /* Accumulate PCM into 3-second AI buffer */
+    uint32_t chunk_samples_h = AUDIO_IN_PDM_BUFFER_SIZE / 4 / 2;
+    if (ai_recording_enabled && !ai_buffer_ready && ai_pcm_write_ptr + chunk_samples_h <= AI_PCM_BUFFER_SIZE) {
+      memcpy(&ai_pcm_buffer[ai_pcm_write_ptr],
+             &RecPlayback[playbackPtr],
+             chunk_samples_h * sizeof(int16_t));
+      ai_pcm_write_ptr += chunk_samples_h;
+      if (ai_pcm_write_ptr >= AI_PCM_BUFFER_SIZE) {
+        ai_buffer_ready = 1;
+      }
+    }
 
-    playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
+    playbackPtr += chunk_samples_h;
     if(playbackPtr >= RECORD_BUFFER_SIZE)
     {
       playbackPtr = 0;
-      // RecPlayback is full - copy to PlaybackBuffer so OUT DMA plays the latest recording
       memcpy(PlaybackBuffer, RecPlayback, RECORD_BUFFER_SIZE * sizeof(uint16_t));
       SCB_CleanDCache_by_Addr((uint32_t*)PlaybackBuffer, RECORD_BUFFER_SIZE * sizeof(uint16_t));
     }

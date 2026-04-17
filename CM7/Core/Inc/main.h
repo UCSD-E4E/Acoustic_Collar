@@ -63,6 +63,7 @@ typedef enum
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 #define RECORD_BUFFER_SIZE        4096
+#define AI_PCM_BUFFER_SIZE        48000  /* 3 seconds at 16kHz */
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -73,6 +74,10 @@ extern uint8_t AI_PROCESS;
 extern uint16_t RecPlayback[2 * RECORD_BUFFER_SIZE];
 extern uint16_t PlaybackBuffer[2 * RECORD_BUFFER_SIZE];
 extern uint32_t playbackPtr;
+extern int16_t  ai_pcm_buffer[AI_PCM_BUFFER_SIZE];
+extern volatile uint32_t ai_pcm_write_ptr;
+extern volatile uint8_t  ai_buffer_ready;
+extern volatile uint8_t  ai_recording_enabled;  /* gate: only fill buffer when set */
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

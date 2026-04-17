@@ -50,6 +50,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
+#include <math.h>
 
 #include "app_x-cube-ai.h"
 #include "main.h"
@@ -192,12 +193,51 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
     float *mel_spec = (float *)data[0];
     memset(mel_spec, 0, AI_TINYCNNBUOW_IN_1_SIZE_BYTES);
 
+    /* --- PCM diagnostics --- */
+    int16_t *pcm = (int16_t *)pcm_buffer;
+    int16_t pcm_min = pcm[0], pcm_max = pcm[0];
+    int64_t pcm_sum = 0;
+    uint32_t zero_count = 0;
+    for (uint32_t i = 0; i < AI_PCM_BUFFER_SIZE; i++) {
+      if (pcm[i] < pcm_min) pcm_min = pcm[i];
+      if (pcm[i] > pcm_max) pcm_max = pcm[i];
+      pcm_sum += pcm[i];
+      if (pcm[i] == 0) zero_count++;
+    }
+    // printf("PCM: min=%d max=%d mean=%d zeros=%lu/%d\r\n",
+    //     pcm_min, pcm_max, (int)(pcm_sum / AI_PCM_BUFFER_SIZE),
+    //     (unsigned long)zero_count, AI_PCM_BUFFER_SIZE);
+
     // call DSP pipeline for PCMBuffer -> mel_spec
-    int n_frames = calculate_mel_spectrogram((const int16_t *)pcm_buffer, RECORD_BUFFER_SIZE, mel_spec,
+    int n_frames = calculate_mel_spectrogram((const int16_t *)pcm_buffer, AI_PCM_BUFFER_SIZE, mel_spec,
                          AI_TINYCNNBUOW_IN_1_CHANNEL);
 
-    // normalize to [0, 1]
+    /* --- Mel spec diagnostics (before normalization) --- */
+    // float mel_min = mel_spec[0], mel_max = mel_spec[0];
+    // uint32_t nan_count = 0, inf_count = 0;
+    // for (uint32_t i = 0; i < (uint32_t)config.n_mels * n_frames; i++) {
+    //   if (isnan(mel_spec[i])) nan_count++;
+    //   if (isinf(mel_spec[i])) inf_count++;
+    //   if (mel_spec[i] < mel_min) mel_min = mel_spec[i];
+    //   if (mel_spec[i] > mel_max) mel_max = mel_spec[i];
+    // }
+    /* Print as integers since newlib-nano may not support %f */
+    // printf("Mel (pre-norm): min=%d.%02d max=%d.%02d frames=%d nan=%lu inf=%lu\r\n",
+    //     (int)mel_min, abs((int)(mel_min * 100) % 100),
+    //     (int)mel_max, abs((int)(mel_max * 100) % 100),
+    //     n_frames, (unsigned long)nan_count, (unsigned long)inf_count);
+
     normalize_spectrogram(mel_spec, config.n_mels, n_frames);
+
+    /* --- Post-normalization check --- */
+    // float norm_min = mel_spec[0], norm_max = mel_spec[0];
+    // for (uint32_t i = 1; i < (uint32_t)config.n_mels * n_frames; i++) {
+    //   if (mel_spec[i] < norm_min) norm_min = mel_spec[i];
+    //   if (mel_spec[i] > norm_max) norm_max = mel_spec[i];
+    // }
+    // printf("Mel (post-norm): min=%d.%02d max=%d.%02d\r\n",
+    //     (int)norm_min, abs((int)(norm_min * 100) % 100),
+    //     (int)norm_max, abs((int)(norm_max * 100) % 100));
 
     return 0;
 }
@@ -205,13 +245,9 @@ int acquire_and_process_data(ai_i8* data[], uint16_t* pcm_buffer)
 
 int post_process(ai_i8* data[])
 {
-  /* process the predictions
-  */
-
-    // data[0] is a void pointer to a float buffer
     float *predictions = (float *)data[0];
 
-    char *class_names[] = {
+    const char *class_names[] = {
         "Cluck",
         "Coocoo",
         "Twitter",
@@ -220,30 +256,26 @@ int post_process(ai_i8* data[])
         "no_buow"
     };
 
+    /* Find predicted class index */
     int max_index = 0;
-    float max_value = predictions[0];
-    for (int i = 0; i < AI_TINYCNNBUOW_OUT_1_SIZE; ++i) {
-        if (predictions[i] > max_value) {
-            max_value = predictions[i];
+    for (int i = 1; i < AI_TINYCNNBUOW_OUT_1_SIZE; i++) {
+        if (predictions[i] > predictions[max_index])
             max_index = i;
-        }
-        int predict = predictions[i] * 100;
-        int whole_part = predict / 100;
-        if (predict < 0) {
-          predict -= 2 * predict; // convert to positive
-        }
-
-      printf("Class: %s, Score: %d.%d\n\r", class_names[i], whole_part, predict%100);
-      HAL_Delay(2000);
     }
-    printf("Predicted Class: %s\n\r", class_names[max_index]);
-    HAL_Delay(8000);
+
+    /* Emit comma-separated scores (value * 100, integer, signed) */
+    printf("SCORES:");
+    for (int i = 0; i < AI_TINYCNNBUOW_OUT_1_SIZE; i++) {
+        int score = (int)(predictions[i] * 100);
+        if (i < AI_TINYCNNBUOW_OUT_1_SIZE - 1)
+            printf("%d,", score);
+        else
+            printf("%d", score);
+    }
+    printf("\r\n");
+    printf("PREDICTION:%s\r\n", class_names[max_index]);
 
     return 0;
-
-    // output tensor is the first element of data array
-
-    // return 0;
 }
 /* USER CODE END 2 */
 
@@ -323,7 +355,16 @@ void MX_X_CUBE_AI_TestMelSpec(void)
   printf("Export via Memory Browser, then resume.\r\n");
   printf("--- Halting (breakpoint) ---\r\n");
 
-  __BKPT(0);  /* Halts here — export data_ins[0] via Memory Browser */
+  // __BKPT(0);  /* Halts here — export data_ins[0] via Memory Browser */
+
+  /* Run inference on the mel spec we just computed */
+  printf("\r\n--- Test Inference (from PCM) ---\r\n");
+  if (ai_run() == 0) {
+    post_process(data_outs);
+  } else {
+    printf("ERROR: ai_run failed\r\n");
+  }
+  printf("--- End Test ---\r\n");
 }
 
 void MX_X_CUBE_AI_Process(uint16_t *pcm_buffer)

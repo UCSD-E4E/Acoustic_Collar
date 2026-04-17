@@ -172,11 +172,32 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	MicrophoneStartProcess();
+	printf("READY\r\n");
 	while (1)
 	{
-//		printf("Recording (AGAIN!)...\n");
-		if(AI_PROCESS){
-		  MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
+		/* Read one line from UART (block until '\n') */
+		char cmd_buf[16];
+		memset(cmd_buf, 0, sizeof(cmd_buf));
+		uint8_t c;
+		int len = 0;
+		while (len < (int)(sizeof(cmd_buf) - 1)) {
+			HAL_UART_Receive(&huart1, &c, 1, HAL_MAX_DELAY);
+			if (c == '\n') break;
+			if (c != '\r') cmd_buf[len++] = c;
+		}
+
+		if (strncmp(cmd_buf, "START", 5) == 0) {
+			/* Reset AI buffer and enable recording */
+			ai_pcm_write_ptr = 0;
+			ai_buffer_ready = 0;
+			ai_recording_enabled = 1;
+			printf("RECORDING\r\n");
+
+			/* Wait for 3-second buffer to fill via DMA callbacks */
+			while (!ai_buffer_ready);
+
+			ai_recording_enabled = 0;
+			MX_X_CUBE_AI_Process((uint16_t *)ai_pcm_buffer);
 		}
     /* USER CODE END WHILE */
 

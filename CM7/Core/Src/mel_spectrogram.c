@@ -128,7 +128,8 @@ int calculate_mel_spectrogram(const int16_t *pcm_data, uint32_t pcm_size, float 
                 mel_energy += power_spectrum[k] * mel_filters[m * fft_bins + k];
             }
 
-            float log_energy = 10.0f * log10f(mel_energy + LOG10_OFFSET);
+            float clamped = mel_energy > 1e-10f ? mel_energy : 1e-10f;
+            float log_energy = 10.0f * log10f(clamped);
             spectrogram[m * n_frames + frame] = log_energy;
         }
     }
