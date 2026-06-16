@@ -27,6 +27,8 @@ extern "C" {
 
 void MX_X_CUBE_AI_Init(void);
 void MX_X_CUBE_AI_Process(uint16_t* pcm_buffer);
+void MX_X_CUBE_AI_TestInference(void);
+void MX_X_CUBE_AI_TestMelSpec(void);
 /* USER CODE BEGIN includes */
 /* USER CODE END includes */
 #ifdef __cplusplus

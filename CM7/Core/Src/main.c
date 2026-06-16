@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include <stdio.h>
 #include "app_x-cube-ai.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -76,8 +75,8 @@ static void MX_LTDC_Init(void);
 static void MX_FMC_Init(void);
 /* USER CODE BEGIN PFP */
 uint8_t AI_PROCESS = 0; //flag to signal AI processing
-ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]);
-ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]);
+ALIGN_32BYTES (uint16_t  RecPlayback[2*RECORD_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
+ALIGN_32BYTES (uint16_t  PlaybackBuffer[2*RECORD_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
 uint32_t playbackPtr;
 /* USER CODE END PFP */
 
@@ -89,29 +88,29 @@ int _write(int file, char *ptr, int len) {
 }
 /* USER CODE END 0 */
 
-
 /**
   * @brief  The application entry point.
   * @retval int
   */
 int main(void)
 {
-	/* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
-	/* USER CODE BEGIN Boot_Mode_Sequence_0 */
+  /* USER CODE BEGIN 1 */
+
+  /* USER CODE END 1 */
+/* USER CODE BEGIN Boot_Mode_Sequence_0 */
 	int32_t timeout;
-	/* USER CODE END Boot_Mode_Sequence_0 */
+/* USER CODE END Boot_Mode_Sequence_0 */
 
-	/* Enable the CPU Cache */
+  /* Enable the CPU Cache */
 
-	/* Enable I-Cache---------------------------------------------------------*/
-	SCB_EnableICache();
+  /* Enable I-Cache---------------------------------------------------------*/
+  SCB_EnableICache();
 
-	/* Enable D-Cache---------------------------------------------------------*/
-	SCB_EnableDCache();
+  /* Enable D-Cache---------------------------------------------------------*/
+  SCB_EnableDCache();
 
-	/* USER CODE BEGIN Boot_Mode_Sequence_1 */
+/* USER CODE BEGIN Boot_Mode_Sequence_1 */
 	/* Wait until CPU2 boots and enters in stop mode or timeout*/
 	timeout = 0xFFFF;
 	while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) && (timeout-- > 0));
@@ -119,22 +118,22 @@ int main(void)
 	{
 		Error_Handler();
 	}
-	/* USER CODE END Boot_Mode_Sequence_1 */
-	/* MCU Configuration--------------------------------------------------------*/
+/* USER CODE END Boot_Mode_Sequence_1 */
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-	/* USER CODE END Init */
+  /* USER CODE END Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/* Configure the peripherals common clocks */
-	PeriphCommonClock_Config();
-	/* USER CODE BEGIN Boot_Mode_Sequence_2 */
+  /* Configure the peripherals common clocks */
+  PeriphCommonClock_Config();
+/* USER CODE BEGIN Boot_Mode_Sequence_2 */
 	/* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
 	HSEM notification */
 	/*HW semaphore Clock enable*/
@@ -150,39 +149,41 @@ int main(void)
 	{
 		Error_Handler();
 	}
-	/* USER CODE END Boot_Mode_Sequence_2 */
+/* USER CODE END Boot_Mode_Sequence_2 */
 
-	/* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-	/* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_USART1_UART_Init();
-	MX_SAI1_Init();
-	MX_DMA2D_Init();
-	MX_DSIHOST_DSI_Init();
-	MX_LTDC_Init();
-	MX_FMC_Init();
-	MX_X_CUBE_AI_Init();
-	/* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_USART1_UART_Init();
+  MX_SAI1_Init();
+  MX_DMA2D_Init();
+  MX_DSIHOST_DSI_Init();
+  MX_LTDC_Init();
+  MX_FMC_Init();
+  MX_X_CUBE_AI_Init();
+  /* USER CODE BEGIN 2 */
+  // MX_X_CUBE_AI_TestInference();
+  // MX_X_CUBE_AI_TestMelSpec();
+  /* USER CODE END 2 */
 
-	/* USER CODE END 2 */
-
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	MicrophoneStartProcess();
 	while (1)
 	{
-		printf("Recording (AGAIN!)...\n");
+//		printf("Recording (AGAIN!)...\n");
 		if(AI_PROCESS){
 		  MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
 		}
-	/* USER CODE END WHILE */
-	/* USER CODE BEGIN 3 */
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
 
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**

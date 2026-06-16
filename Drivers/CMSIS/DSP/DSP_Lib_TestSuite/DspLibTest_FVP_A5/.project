@@ -25,46 +25,6 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>Includes/DSP_includes</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Include</locationURI>
-		</link>
-		<link>
-			<name>Includes/common_includes</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Common/inc</locationURI>
-		</link>
-		<link>
-			<name>Includes/jtest_includes</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Common/JTest/inc</locationURI>
-		</link>
-		<link>
-			<name>Includes/reflibs_includes</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/RefLibs/inc</locationURI>
-		</link>
-		<link>
-			<name>Sources/DSP_src</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/Source</locationURI>
-		</link>
-		<link>
-			<name>Sources/jtest_src</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Common/JTest/src</locationURI>
-		</link>
-		<link>
-			<name>Sources/reflibs_src</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/RefLibs/src</locationURI>
-		</link>
-		<link>
-			<name>Sources/test_src</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Common/src</locationURI>
-		</link>
-		<link>
 			<name>RTE/CMSIS/irq_ca.S</name>
 			<type>1</type>
 			<locationURI>$%7Bcmsis_pack_root%7D/ARM/CMSIS/5.5.1/CMSIS/RTOS2/RTX/Source/GCC/irq_ca.S</locationURI>

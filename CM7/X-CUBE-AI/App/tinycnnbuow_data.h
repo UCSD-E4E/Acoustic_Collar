@@ -2,10 +2,10 @@
   ******************************************************************************
   * @file    tinycnnbuow_data.h
   * @author  AST Embedded Analytics Research Platform
-  * @date    2025-07-07T14:53:22-0700
+  * @date    2026-03-12T19:02:05-0700
   * @brief   AI Tool Automatic Code Generator for Embedded NN computing
   ******************************************************************************
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -32,7 +32,7 @@ AI_DEPRECATED
 AI_API_DECLARE_BEGIN
 
 
-extern const ai_u64 s_tinycnnbuow_weights_array_u64[3044];
+extern const ai_u64 s_tinycnnbuow_weights_array_u64[1888];
 
 
 

@@ -9,8 +9,8 @@
 // #include "arm_math.h" // CMSIS-DSP library header provided by ARM
 // #include "arm_const_structs.h" // CMSIS-DSP library constants
 
-#define LOG10_OFFSET 1e-6f
-#define MIN_DB_LEVEL -80.0f // tune?
+#define LOG10_OFFSET 1e-10f
+#define TOP_DB 80.0f
 
 static MelSpectrogramConfig_t cfg;
 
@@ -49,8 +49,28 @@ int mel_spectrogram_init(MelSpectrogramConfig_t *config)
     return 0;
 }
 
+// Helper: get a PCM sample with reflect padding for center=True behavior.
+// The signal is conceptually padded by n_fft/2 on each side using reflect mode.
+static inline float get_padded_sample(const int16_t *pcm_data, uint32_t pcm_size,
+                                       int32_t idx, uint16_t pad)
+{
+    int32_t src = idx - pad;  // shift back by pad amount
+
+    // reflect padding (mirrors at boundaries, matching torch "reflect" mode)
+    if (src < 0)
+        src = -src;
+    else if (src >= (int32_t)pcm_size)
+        src = 2 * (int32_t)pcm_size - src - 2;
+
+    if (src < 0 || src >= (int32_t)pcm_size)
+        return 0.0f;
+
+    return pcm_data[src] / 32768.0f;
+}
+
 // run STFT + apply Mel filterbank
 // converts PCM data to mel spectrogram
+// Matches torchaudio.transforms.MelSpectrogram with center=True, power=2.0
 int calculate_mel_spectrogram(const int16_t *pcm_data, uint32_t pcm_size, float *spectrogram,
                               uint16_t spec_cols_max)
 {
@@ -60,7 +80,11 @@ int calculate_mel_spectrogram(const int16_t *pcm_data, uint32_t pcm_size, float 
     const uint16_t n_fft = cfg.fft_size;
     const uint16_t hop = cfg.hop_length;
     const uint16_t fft_bins = n_fft / 2 + 1;
-    uint16_t n_frames = (pcm_size - n_fft) / hop + 1;
+    const uint16_t pad = n_fft / 2;  // center padding amount
+
+    // With center=True, padded length = pcm_size + 2*pad
+    uint32_t padded_size = pcm_size + 2 * pad;
+    uint16_t n_frames = (padded_size - n_fft) / hop + 1;
 
     if (n_frames > spec_cols_max)
         n_frames = spec_cols_max;
@@ -73,20 +97,18 @@ int calculate_mel_spectrogram(const int16_t *pcm_data, uint32_t pcm_size, float 
     {
         uint32_t offset = frame * hop;
 
-        // frame with window
+        // frame with window, using reflect-padded samples
         for (uint16_t i = 0; i < n_fft; ++i)
         {
-            if (offset + i < pcm_size)
-                fft_buffer[i] = (pcm_data[offset + i] / 32768.0f) * window_buffer[i];
-            else
-                fft_buffer[i] = 0.0f;
+            fft_buffer[i] = get_padded_sample(pcm_data, pcm_size, offset + i, pad)
+                            * window_buffer[i];
         }
 
         // real FFT using CMSIS-DSP
         arm_rfft_fast_f32(&fft_instance, fft_buffer, fft_buffer, 0);
 
         // power spectrum from real + imag
-        // DC comp
+        // DC component
         power_spectrum[0] = fft_buffer[0] * fft_buffer[0];
         for (uint16_t i = 1; i < fft_bins - 1; ++i)
         {
@@ -94,10 +116,10 @@ int calculate_mel_spectrogram(const int16_t *pcm_data, uint32_t pcm_size, float 
             float im = fft_buffer[2 * i + 1];
             power_spectrum[i] = re * re + im * im;
         }
-        // nyquist component
-        power_spectrum[fft_bins - 1] = fft_buffer[1] * fft_buffer[1]; // Nyquist
+        // Nyquist component
+        power_spectrum[fft_bins - 1] = fft_buffer[1] * fft_buffer[1];
 
-        // apply Mel filterbank
+        // apply Mel filterbank + dB conversion
         for (uint16_t m = 0; m < cfg.n_mels; ++m)
         {
             float mel_energy = 0.0f;
@@ -107,37 +129,50 @@ int calculate_mel_spectrogram(const int16_t *pcm_data, uint32_t pcm_size, float 
             }
 
             float log_energy = 10.0f * log10f(mel_energy + LOG10_OFFSET);
-            if (log_energy < MIN_DB_LEVEL)
-                log_energy = MIN_DB_LEVEL;
             spectrogram[m * n_frames + frame] = log_energy;
         }
+    }
+
+    // Dynamic dB floor: clamp to (max_value - TOP_DB), matching torchaudio AmplitudeToDB
+    float max_db = spectrogram[0];
+    for (uint32_t i = 1; i < (uint32_t)cfg.n_mels * n_frames; ++i)
+    {
+        if (spectrogram[i] > max_db)
+            max_db = spectrogram[i];
+    }
+    float floor_db = max_db - TOP_DB;
+    for (uint32_t i = 0; i < (uint32_t)cfg.n_mels * n_frames; ++i)
+    {
+        if (spectrogram[i] < floor_db)
+            spectrogram[i] = floor_db;
     }
 
     return n_frames;
 }
 
-// Finds min and max in mel matrix and scales to [0, 1]
+// Z-score normalization: (x - mean) / (std + 1e-6)
+// Matches Python: mel_db = (mel_db - mel_db.mean()) / (mel_db.std() + 1e-6)
 void normalize_spectrogram(float *spectrogram, uint16_t n_mels, uint16_t n_frames)
 {
-    float min = spectrogram[0], max = spectrogram[0];
+    uint32_t n = (uint32_t)n_mels * n_frames;
 
-    for (uint32_t i = 0; i < n_mels * n_frames; ++i)
-    {
-        if (spectrogram[i] < min)
-            min = spectrogram[i];
-        if (spectrogram[i] > max)
-            max = spectrogram[i];
-    }
+    // compute mean
+    float mean = 0.0f;
+    for (uint32_t i = 0; i < n; ++i)
+        mean += spectrogram[i];
+    mean /= n;
 
-    float range = max - min;
-    if (range == 0.0f)
+    // compute std
+    float var = 0.0f;
+    for (uint32_t i = 0; i < n; ++i)
     {
-        memset(spectrogram, 0, n_mels * n_frames * sizeof(float));
-        return;
+        float diff = spectrogram[i] - mean;
+        var += diff * diff;
     }
+    float std = sqrtf(var / n);
 
-    for (uint32_t i = 0; i < n_mels * n_frames; ++i)
-    {
-        spectrogram[i] = (spectrogram[i] - min) / range;
-    }
+    // normalize
+    float inv_std = 1.0f / (std + 1e-6f);
+    for (uint32_t i = 0; i < n; ++i)
+        spectrogram[i] = (spectrogram[i] - mean) * inv_std;
 }

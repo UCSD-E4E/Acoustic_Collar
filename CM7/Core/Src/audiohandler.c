@@ -20,13 +20,13 @@ extern AUDIO_ErrorTypeDef AUDIO_Start(uint32_t audio_start_address, uint32_t aud
 #define AUDIO_BLOCK_SIZE   ((uint32_t)0xFFFE)
 
 #if defined ( __CC_ARM )  /* !< ARM Compiler */
-  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D1")));
+  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
 
 #elif defined ( __ICCARM__ )  /* !< ICCARM Compiler */
   #pragma location=0x38000000
 ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]);
 #elif defined ( __GNUC__ )  /* !< GNU Compiler */
-  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D1")));
+  ALIGN_32BYTES (uint16_t recordPDMBuf[AUDIO_IN_PDM_BUFFER_SIZE]) __attribute__((section(".RAM_D3")));
 #endif
 static uint32_t AudioFreq[9] = {8000 ,11025, 16000, 22050, 32000, 44100, 48000, 96000, 192000};
 uint32_t VolumeLevel = 80;
@@ -56,16 +56,26 @@ void MicrophoneStartProcess()
 	AudioInInit.BitsPerSample = AUDIO_RESOLUTION_16B;
 	AudioInInit.Volume = VolumeLevel;
 
-	/* Initialize Audio Recorder with 2 channels to be used */
-	BSP_AUDIO_IN_Init(1, &AudioInInit);
-	BSP_AUDIO_IN_GetState(1, &InState);
-	BSP_AUDIO_OUT_Init(0, &AudioOutInit);
+	int32_t ret = BSP_AUDIO_IN_Init(1, &AudioInInit);
+	
+	ret = BSP_AUDIO_IN_GetState(1, &InState);
+	
+	ret = BSP_AUDIO_OUT_Init(0, &AudioOutInit);
 
-	BSP_AUDIO_OUT_SetDevice(0, AUDIO_OUT_DEVICE_HEADPHONE);
-	BSP_AUDIO_IN_RecordPDM(2, (uint8_t*)&recordPDMBuf, AUDIO_IN_PDM_BUFFER_SIZE);
+	ret = BSP_AUDIO_OUT_SetDevice(0, AUDIO_OUT_DEVICE_HEADPHONE);
+	
+	// Ensure SAI4 is enabled
+	__HAL_SAI_ENABLE(&haudio_in_sai);
+
+	BSP_AUDIO_IN_RecordPDM(1, (uint8_t*)&recordPDMBuf, sizeof(recordPDMBuf));
 
 	// TODO: remove audio playback - just for testing audio recording
-	BSP_AUDIO_OUT_Play(0, (uint8_t*)&RecPlayback, RECORD_BUFFER_SIZE);
+	// Play PlaybackBuffer (separate from RecPlayback to avoid DMA race condition).
+	// RecPlayback fills via PDMToPCM callbacks; once full it is copied into PlaybackBuffer.
+	memset(PlaybackBuffer, 0, RECORD_BUFFER_SIZE * sizeof(uint16_t));
+	SCB_CleanDCache_by_Addr((uint32_t*)PlaybackBuffer, RECORD_BUFFER_SIZE * sizeof(uint16_t));
+	ret = BSP_AUDIO_OUT_Play(0, (uint8_t*)PlaybackBuffer, RECORD_BUFFER_SIZE * sizeof(uint16_t));
+
 }
 
 void DMA2_Stream1_IRQHandler(void)
@@ -91,16 +101,22 @@ void  BSP_AUDIO_IN_TransferComplete_CallBack(uint32_t Instance)
     SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
 
     // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
-    printf("processing 2nd half of buffer");
+//    printf("processing 2nd half of buffer");
     AI_PROCESS = 1; //signal AI processing
     //MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
 
     playbackPtr += AUDIO_IN_PDM_BUFFER_SIZE/4/2;
     if(playbackPtr >= RECORD_BUFFER_SIZE)
+    {
       playbackPtr = 0;
+      // RecPlayback is full - copy to PlaybackBuffer so OUT DMA plays the latest recording
+      memcpy(PlaybackBuffer, RecPlayback, RECORD_BUFFER_SIZE * sizeof(uint16_t));
+      SCB_CleanDCache_by_Addr((uint32_t*)PlaybackBuffer, RECORD_BUFFER_SIZE * sizeof(uint16_t));
+    }
   }
   else
   {
+	printf("HERE\n");
     AudioBufferOffset = BUFFER_OFFSET_FULL;
   }
 
@@ -124,7 +140,7 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
     SCB_CleanDCache_by_Addr((uint32_t*)&RecPlayback[playbackPtr], AUDIO_IN_PDM_BUFFER_SIZE/4);
 
     // TODO: MAKE A FLAG TO AVOID CALLING IN TRANSFER CALLBACK
-    printf("processing 1st half of buffer");
+//    printf("processing 1st half of buffer");
     AI_PROCESS = 1; //signal AI processing
     //MX_X_CUBE_AI_Process(&RecPlayback[playbackPtr]);
 
@@ -132,6 +148,9 @@ void BSP_AUDIO_IN_HalfTransfer_CallBack(uint32_t Instance)
     if(playbackPtr >= RECORD_BUFFER_SIZE)
     {
       playbackPtr = 0;
+      // RecPlayback is full - copy to PlaybackBuffer so OUT DMA plays the latest recording
+      memcpy(PlaybackBuffer, RecPlayback, RECORD_BUFFER_SIZE * sizeof(uint16_t));
+      SCB_CleanDCache_by_Addr((uint32_t*)PlaybackBuffer, RECORD_BUFFER_SIZE * sizeof(uint16_t));
     }
   }
   else

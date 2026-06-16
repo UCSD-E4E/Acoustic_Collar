@@ -4,8 +4,8 @@
 
 #include <stdint.h>
 
-#define MAX_FFT_SIZE 258 //2048
-#define MAX_MEL_BANDS 64 //128
+#define MAX_FFT_SIZE 512 //2048
+#define MAX_MEL_BANDS 128 //128
 
 typedef struct
 {
@@ -36,7 +36,7 @@ int calculate_mel_spectrogram(const int16_t *pcm_data, uint32_t pcm_size, float 
                               uint16_t spec_cols_max);
 
 /**
- * @brief Normalizes spectrogram in-place to [0, 1] range
+ * @brief Z-score normalizes spectrogram in-place: (x - mean) / (std + 1e-6)
  */
 void normalize_spectrogram(float *spec, uint16_t n_mels, uint16_t n_frames);
 
